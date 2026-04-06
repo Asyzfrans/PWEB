@@ -1,0 +1,2374 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BantuIn — Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#fff1f4",
+                100: "#ffe4ea",
+                200: "#fecdd8",
+                300: "#fda4b9",
+                400: "#fb6f94",
+                500: "#f43f73",
+                600: "#e11d5d",
+                700: "#be124c",
+                800: "#9f123f",
+                900: "#881337",
+              },
+              ink: {
+                900: "#0f172a",
+                700: "#334155",
+                600: "#475569",
+                500: "#64748b",
+                200: "#e2e8f0",
+                100: "#f1f5f9",
+                50: "#f8fafc",
+              },
+            },
+            boxShadow: { soft: "0 10px 30px rgba(2, 6, 23, 0.10)" },
+          },
+        },
+      };
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CSS INTERNAL (sesuai persyaratan: internal stylesheet)
+         Berisi: CSS Variables, Positioning, Transitions, Animations,
+                 Grid basics, Flexbox, Media queries (mobile-first)
+    ══════════════════════════════════════════════════════════════ -->
+    <style>
+      /* ── CSS Variables (Custom Properties) ── */
+      :root {
+        --color-primary: #be124c;
+        --color-primary-light: #fff1f4;
+        --color-success: #16a34a;
+        --color-success-bg: #f0fdf4;
+        --color-warning: #d97706;
+        --color-warning-bg: #fffbeb;
+        --color-danger: #dc2626;
+        --color-danger-bg: #fef2f2;
+        --color-info: #0ea5e9;
+        --color-info-bg: #f0f9ff;
+        --sidebar-w: 260px;
+        --topbar-h: 64px;
+        --radius-card: 1rem;
+        --transition-base: 0.22s ease;
+        --shadow-card: 0 4px 20px rgba(2, 6, 23, 0.08);
+        --font-display: "Georgia", serif;
+      }
+
+      /* ── Reset & Base ── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+      }
+
+      /* ── CSS Positioning: fixed sidebar ── */
+      .sidebar {
+        position: fixed; /* Fixed positioning */
+        top: 0;
+        left: 0;
+        width: var(--sidebar-w);
+        height: 100vh;
+        background: #0f172a;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        transition: transform var(--transition-base); /* CSS Transition */
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* Mobile: sidebar hidden by default (mobile-first) */
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* ── Topbar: fixed positioning ── */
+      .topbar {
+        position: fixed; /* Fixed positioning */
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--topbar-h);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid #e2e8f0;
+        z-index: 40;
+        display: flex; /* Flexbox */
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        transition: box-shadow var(--transition-base);
+      }
+      .topbar.scrolled {
+        box-shadow: var(--shadow-card);
+      }
+
+      /* ── Main layout: CSS Grid ── */
+      .layout {
+        display: grid; /* CSS Grid */
+        grid-template-columns: 1fr;
+        grid-template-rows: var(--topbar-h) 1fr;
+        min-height: 100vh;
+      }
+
+      /* Main content area */
+      .main-content {
+        margin-top: var(--topbar-h);
+        padding: 1.5rem 1rem;
+        transition: margin-left var(--transition-base);
+      }
+
+      /* ── Stats grid: CSS Grid basics ── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2-column grid mobile */
+        gap: 1rem;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: white;
+        border-radius: var(--radius-card);
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        /* CSS Positioning: relative for child absolutes */
+        position: relative;
+      }
+
+      /* Badge absolute positioning example */
+      .badge-abs {
+        position: absolute; /* Absolute positioning */
+        top: 0.75rem;
+        right: 0.75rem;
+      }
+
+      /* ── Stat card accent bar: absolute + relative ── */
+      .stat-card::before {
+        content: "";
+        position: absolute; /* Absolute inside relative .card */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--color-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s ease;
+      }
+      .stat-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      /* ── CSS Transition & Animation on hover ── */
+      .campaign-row {
+        transition:
+          background var(--transition-base),
+          transform var(--transition-base);
+      }
+      .campaign-row:hover {
+        background: #f8fafc;
+        transform: translateX(2px);
+      }
+
+      /* ── Pulse animation for pending badge ── */
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .pulse {
+        animation: pulse-dot 1.8s infinite;
+      }
+
+      /* ── Slide-in animation for toast ── */
+      @keyframes slideIn {
+        from {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+      }
+      .toast {
+        animation: slideIn 0.35s ease forwards;
+      }
+      .toast.out {
+        animation: slideOut 0.35s ease forwards;
+      }
+
+      /* ── Fade-in for page sections ── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-up {
+        opacity: 0;
+        animation: fadeUp 0.5s ease forwards;
+      }
+      .fade-up:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      .fade-up:nth-child(2) {
+        animation-delay: 0.12s;
+      }
+      .fade-up:nth-child(3) {
+        animation-delay: 0.19s;
+      }
+      .fade-up:nth-child(4) {
+        animation-delay: 0.26s;
+      }
+
+      /* ── Sidebar nav links ── */
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 1rem;
+        border-radius: 0.625rem;
+        font-size: 0.875rem;
+        color: #94a3b8;
+        text-decoration: none;
+        transition:
+          background var(--transition-base),
+          color var(--transition-base);
+        cursor: pointer;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(190, 18, 76, 0.15);
+        color: #fda4b9;
+      }
+      .nav-link.active {
+        color: #fecdd8;
+        font-weight: 600;
+      }
+
+      /* ── Overlay for mobile sidebar ── */
+      .overlay {
+        position: fixed; /* Fixed positioning */
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 45;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--transition-base);
+      }
+      .overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* ── Toast container: fixed positioning ── */
+      #toast-container {
+        position: fixed; /* Fixed positioning */
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      /* ── Modal backdrop: fixed + flex centering ── */
+      .modal-backdrop {
+        position: fixed; /* Fixed positioning */
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 90;
+        display: flex; /* Flexbox centering */
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .modal-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 480px;
+        transform: scale(0.95);
+        transition: transform 0.25s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+      .modal-backdrop.open .modal {
+        transform: scale(1);
+      }
+
+      /* ── Status badges ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .badge-pending {
+        background: var(--color-warning-bg);
+        color: var(--color-warning);
+      }
+      .badge-active {
+        background: var(--color-success-bg);
+        color: var(--color-success);
+      }
+      .badge-rejected {
+        background: var(--color-danger-bg);
+        color: var(--color-danger);
+      }
+      .badge-done {
+        background: var(--color-info-bg);
+        color: var(--color-info);
+      }
+
+      /* ── Tab underline animation ── */
+      .tab-btn {
+        position: relative;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+        color: #64748b;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: color var(--transition-base);
+        white-space: nowrap;
+      }
+      .tab-btn::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--color-primary);
+        transform: scaleX(0);
+        transition: transform 0.25s ease;
+      }
+      .tab-btn.active {
+        color: var(--color-primary);
+        font-weight: 600;
+      }
+      .tab-btn.active::after {
+        transform: scaleX(1);
+      }
+
+      /* ── Progress bar with CSS transition ── */
+      .progress-bar {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 9999px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--color-primary);
+        border-radius: 9999px;
+        transition: width 0.8s ease;
+      }
+
+      /* ── Scrollbar styling ── */
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 2px;
+      }
+
+      /* ══════════════════════════════════════════════
+         MEDIA QUERIES — Mobile-first approach
+         Base = mobile, then progressively enhance
+      ══════════════════════════════════════════════ */
+
+      /* sm: 640px+ */
+      @media (min-width: 640px) {
+        .topbar {
+          padding: 0 1.5rem;
+        }
+        .main-content {
+          padding: 2rem 1.5rem;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      /* md: 768px+ — sidebar always visible */
+      @media (min-width: 768px) {
+        .sidebar {
+          transform: translateX(0);
+        }
+        .topbar {
+          left: var(--sidebar-w);
+        }
+        .main-content {
+          margin-left: var(--sidebar-w);
+          padding: 2rem;
+        }
+        .content-grid {
+          grid-template-columns: 1.6fr 1fr;
+        }
+        .hamburger {
+          display: none !important;
+        }
+      }
+
+      /* lg: 1024px+ */
+      @media (min-width: 1024px) {
+        .main-content {
+          padding: 2.5rem;
+        }
+        .content-grid {
+          grid-template-columns: 1.8fr 1fr;
+        }
+      }
+
+      /* ── Utility ── */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+      button {
+        cursor: pointer;
+      }
+      a {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <aside
+      class="sidebar"
+      id="sidebar"
+      role="navigation"
+      aria-label="Navigasi Admin"
+    >
+      <!-- Brand -->
+      <div
+        style="
+          padding: 1.25rem 1rem;
+          border-bottom: 1px solid #1e293b;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        "
+      >
+        <span
+          style="
+            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--color-primary);
+          "
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path
+              d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"
+            />
+          </svg>
+        </span>
+        <div>
+          <div style="font-size: 0.9rem; font-weight: 700; color: white">
+            BantuIn
+          </div>
+          <div
+            style="font-size: 0.7rem; color: #94a3b8; letter-spacing: 0.08em"
+          >
+            ADMIN PANEL
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav style="padding: 1rem 0.75rem; flex: 1">
+        <div
+          style="
+            font-size: 0.65rem;
+            color: #475569;
+            letter-spacing: 0.12em;
+            padding: 0.5rem 0.25rem 0.5rem 1rem;
+            text-transform: uppercase;
+          "
+        >
+          Utama
+        </div>
+
+        <a
+          class="nav-link active"
+          onclick="showSection('overview')"
+          id="nav-overview"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7V11h-7v9Zm0-18v5h7V2h-7Z"
+            />
+          </svg>
+          Overview
+        </a>
+        <a
+          class="nav-link"
+          onclick="showSection('approvals')"
+          id="nav-approvals"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            />
+          </svg>
+          Persetujuan Kampanye
+          <span
+            id="approval-badge"
+            style="
+              margin-left: auto;
+              background: var(--color-primary);
+              color: white;
+              font-size: 0.65rem;
+              border-radius: 9999px;
+              padding: 0.1rem 0.45rem;
+              font-weight: 700;
+            "
+            class="pulse"
+            >3</span
+          >
+        </a>
+        <a
+          class="nav-link"
+          onclick="showSection('campaigns')"
+          id="nav-campaigns"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm-7 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 10c-2.7 0-8 1.3-8 4v1h16v-1c0-2.7-5.3-4-8-4Z"
+            />
+          </svg>
+          Manajemen Kampanye
+        </a>
+        <a class="nav-link" onclick="showSection('users')" id="nav-users">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+            />
+          </svg>
+          Manajemen Pengguna
+        </a>
+
+        <div
+          style="
+            font-size: 0.65rem;
+            color: #475569;
+            letter-spacing: 0.12em;
+            padding: 1rem 0.25rem 0.5rem 1rem;
+            text-transform: uppercase;
+          "
+        >
+          Laporan
+        </div>
+        <a class="nav-link" onclick="showSection('reports')" id="nav-reports">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm-7 14H7v-2h5v2Zm3-4H7v-2h8v2Zm0-4H7V7h8v2Z"
+            />
+          </svg>
+          Statistik Platform
+        </a>
+
+        <div
+          style="
+            font-size: 0.65rem;
+            color: #475569;
+            letter-spacing: 0.12em;
+            padding: 1rem 0.25rem 0.5rem 1rem;
+            text-transform: uppercase;
+          "
+        >
+          Sistem
+        </div>
+        <a class="nav-link" href="./index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 17l1.4-1.4L8.8 13H20v-2H8.8l2.6-2.6L10 7l-7 7 7 7Z" />
+          </svg>
+          Kembali ke Beranda
+        </a>
+      </nav>
+
+      <!-- Admin info -->
+      <div
+        style="
+          padding: 1rem;
+          border-top: 1px solid #1e293b;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        "
+      >
+        <span
+          style="
+            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+          "
+          >A</span
+        >
+        <div style="overflow: hidden">
+          <div
+            style="
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: white;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            "
+          >
+            Admin BantuIn
+          </div>
+          <div style="font-size: 0.7rem; color: #94a3b8">Super Admin</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══════ TOPBAR ═══════ -->
+    <header class="topbar" id="topbar">
+      <div style="display: flex; align-items: center; gap: 0.75rem">
+        <!-- Hamburger (mobile only) -->
+        <button
+          class="hamburger"
+          onclick="toggleSidebar()"
+          style="
+            display: flex;
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 0.5rem;
+          "
+          aria-label="Buka menu"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#334155"
+            stroke-width="2"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <div>
+          <h1
+            id="page-title"
+            style="font-size: 1rem; font-weight: 700; color: #0f172a"
+          >
+            Overview
+          </h1>
+          <p
+            id="page-sub"
+            style="font-size: 0.72rem; color: #64748b; display: none"
+          >
+            Dashboard admin BantuIn
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem">
+        <!-- Search -->
+        <div style="position: relative; display: none" class="topbar-search">
+          <input
+            type="text"
+            id="global-search"
+            placeholder="Cari kampanye, user..."
+            oninput="handleSearch(this.value)"
+            style="
+              padding: 0.4rem 0.75rem 0.4rem 2.2rem;
+              border: 1px solid #e2e8f0;
+              border-radius: 9999px;
+              font-size: 0.8rem;
+              outline: none;
+              width: 200px;
+              transition: border-color 0.2s;
+            "
+          />
+          <svg
+            style="
+              position: absolute;
+              left: 0.65rem;
+              top: 50%;
+              transform: translateY(-50%);
+              color: #94a3b8;
+            "
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </div>
+        <!-- Notification bell -->
+        <button
+          onclick="showSection('approvals')"
+          style="
+            position: relative;
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 0.5rem;
+          "
+          aria-label="Notifikasi"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#334155"
+            stroke-width="2"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          <span
+            style="
+              position: absolute;
+              top: 6px;
+              right: 6px;
+              width: 8px;
+              height: 8px;
+              background: var(--color-primary);
+              border-radius: 50%;
+              border: 2px solid white;
+            "
+            class="pulse"
+          ></span>
+        </button>
+        <span
+          style="font-size: 0.75rem; color: #64748b; display: none"
+          id="topbar-date"
+        ></span>
+      </div>
+    </header>
+
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <main class="main-content" id="main-content">
+      <!-- ════ SECTION: OVERVIEW ════ -->
+      <section id="section-overview">
+        <div class="fade-up" style="margin-bottom: 1.5rem">
+          <h2 style="font-size: 1.3rem; font-weight: 700; color: #0f172a">
+            Selamat datang, Admin! 👋
+          </h2>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+            Pantau dan kelola seluruh aktivitas platform BantuIn.
+          </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="card stat-card fade-up" style="padding: 1.25rem">
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <div
+                  style="
+                    font-size: 0.72rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                  "
+                >
+                  Total Kampanye
+                </div>
+                <div
+                  style="
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin-top: 0.25rem;
+                    color: #0f172a;
+                  "
+                  id="stat-total"
+                >
+                  24
+                </div>
+                <div
+                  style="font-size: 0.72rem; color: #16a34a; margin-top: 0.2rem"
+                >
+                  ↑ +3 bulan ini
+                </div>
+              </div>
+              <span
+                style="
+                  display: inline-flex;
+                  width: 40px;
+                  height: 40px;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 0.75rem;
+                  background: var(--color-primary-light);
+                  color: var(--color-primary);
+                "
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm-5 14H7v-2h7v2Zm3-4H7v-2h10v2Zm0-4H7V7h10v2Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="card stat-card fade-up" style="padding: 1.25rem">
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <div
+                  style="
+                    font-size: 0.72rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                  "
+                >
+                  Menunggu Persetujuan
+                </div>
+                <div
+                  style="
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin-top: 0.25rem;
+                    color: #d97706;
+                  "
+                  id="stat-pending"
+                >
+                  3
+                </div>
+                <div
+                  style="font-size: 0.72rem; color: #d97706; margin-top: 0.2rem"
+                >
+                  ⚡ Perlu tindakan
+                </div>
+              </div>
+              <span
+                style="
+                  display: inline-flex;
+                  width: 40px;
+                  height: 40px;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 0.75rem;
+                  background: var(--color-warning-bg);
+                  color: var(--color-warning);
+                "
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="card stat-card fade-up" style="padding: 1.25rem">
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <div
+                  style="
+                    font-size: 0.72rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                  "
+                >
+                  Total Pengguna
+                </div>
+                <div
+                  style="
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin-top: 0.25rem;
+                    color: #0f172a;
+                  "
+                  id="stat-users"
+                >
+                  1.842
+                </div>
+                <div
+                  style="font-size: 0.72rem; color: #16a34a; margin-top: 0.2rem"
+                >
+                  ↑ +128 bulan ini
+                </div>
+              </div>
+              <span
+                style="
+                  display: inline-flex;
+                  width: 40px;
+                  height: 40px;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 0.75rem;
+                  background: #f0fdf4;
+                  color: #16a34a;
+                "
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="card stat-card fade-up" style="padding: 1.25rem">
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <div
+                  style="
+                    font-size: 0.72rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                  "
+                >
+                  Total Dana
+                </div>
+                <div
+                  style="
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    margin-top: 0.25rem;
+                    color: #0f172a;
+                  "
+                >
+                  Rp 1,2M
+                </div>
+                <div
+                  style="font-size: 0.72rem; color: #16a34a; margin-top: 0.2rem"
+                >
+                  ↑ +22% bulan ini
+                </div>
+              </div>
+              <span
+                style="
+                  display: inline-flex;
+                  width: 40px;
+                  height: 40px;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 0.75rem;
+                  background: #f0f9ff;
+                  color: #0ea5e9;
+                "
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4Z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+          <!-- Recent Approvals -->
+          <div class="card fade-up">
+            <div
+              style="
+                padding: 1.25rem 1.5rem;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <h3 style="font-size: 0.95rem; font-weight: 700">
+                  Menunggu Persetujuan
+                </h3>
+                <p
+                  style="
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    margin-top: 0.15rem;
+                  "
+                >
+                  Kampanye baru yang memerlukan review
+                </p>
+              </div>
+              <button
+                onclick="showSection('approvals')"
+                style="
+                  font-size: 0.75rem;
+                  color: var(--color-primary);
+                  font-weight: 600;
+                  border: none;
+                  background: transparent;
+                "
+              >
+                Lihat semua →
+              </button>
+            </div>
+            <div style="padding: 1rem" id="overview-pending-list"></div>
+          </div>
+
+          <!-- Platform Summary -->
+          <div style="display: flex; flex-direction: column; gap: 1rem">
+            <div class="card fade-up" style="padding: 1.25rem">
+              <h3
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 700;
+                  margin-bottom: 1rem;
+                "
+              >
+                Kampanye per Status
+              </h3>
+              <div
+                id="status-chart"
+                style="display: flex; flex-direction: column; gap: 0.6rem"
+              ></div>
+            </div>
+            <div class="card fade-up" style="padding: 1.25rem">
+              <h3
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 700;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                Aktivitas Terbaru
+              </h3>
+              <div
+                id="activity-feed"
+                style="
+                  font-size: 0.8rem;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.6rem;
+                "
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ SECTION: APPROVALS ════ -->
+      <section id="section-approvals" style="display: none">
+        <div style="margin-bottom: 1.5rem">
+          <h2 style="font-size: 1.3rem; font-weight: 700">
+            Persetujuan Kampanye
+          </h2>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+            Tinjau dan setujui atau tolak kampanye yang dikirim pengguna.
+          </p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="card" style="margin-bottom: 1.5rem">
+          <div
+            style="
+              padding: 0 1.5rem;
+              border-bottom: 1px solid #e2e8f0;
+              display: flex;
+              gap: 1.5rem;
+              overflow-x: auto;
+            "
+          >
+            <button
+              class="tab-btn active"
+              onclick="filterApprovals('pending', this)"
+              data-filter="pending"
+            >
+              Menunggu
+              <span
+                style="
+                  background: #fef3c7;
+                  color: #d97706;
+                  border-radius: 9999px;
+                  padding: 0.1rem 0.4rem;
+                  font-size: 0.65rem;
+                  margin-left: 0.3rem;
+                "
+                id="tab-count-pending"
+                >3</span
+              >
+            </button>
+            <button
+              class="tab-btn"
+              onclick="filterApprovals('approved', this)"
+              data-filter="approved"
+            >
+              Disetujui
+            </button>
+            <button
+              class="tab-btn"
+              onclick="filterApprovals('rejected', this)"
+              data-filter="rejected"
+            >
+              Ditolak
+            </button>
+            <button
+              class="tab-btn"
+              onclick="filterApprovals('all', this)"
+              data-filter="all"
+            >
+              Semua
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="approvals-list"
+          style="display: flex; flex-direction: column; gap: 1rem"
+        ></div>
+      </section>
+
+      <!-- ════ SECTION: CAMPAIGNS ════ -->
+      <section id="section-campaigns" style="display: none">
+        <div
+          style="
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+          "
+        >
+          <div>
+            <h2 style="font-size: 1.3rem; font-weight: 700">
+              Manajemen Kampanye
+            </h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+              Kelola semua kampanye yang aktif di platform.
+            </p>
+          </div>
+          <!-- Search -->
+          <div style="position: relative">
+            <input
+              type="text"
+              id="campaign-search"
+              placeholder="Cari kampanye..."
+              oninput="renderCampaignTable(this.value)"
+              style="
+                padding: 0.5rem 0.75rem 0.5rem 2.2rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.625rem;
+                font-size: 0.8rem;
+                outline: none;
+                width: 200px;
+              "
+            />
+            <svg
+              style="
+                position: absolute;
+                left: 0.65rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+              "
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="card" style="overflow: hidden">
+          <div style="overflow-x: auto">
+            <table
+              style="width: 100%; border-collapse: collapse; font-size: 0.82rem"
+              id="campaigns-table"
+            >
+              <thead>
+                <tr
+                  style="background: #f8fafc; border-bottom: 1px solid #e2e8f0"
+                >
+                  <th
+                    style="
+                      padding: 0.875rem 1.25rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Kampanye
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Penggalang Dana
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Target
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Progress
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Status
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                      white-space: nowrap;
+                    "
+                  >
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="campaigns-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ SECTION: USERS ════ -->
+      <section id="section-users" style="display: none">
+        <div style="margin-bottom: 1.5rem">
+          <h2 style="font-size: 1.3rem; font-weight: 700">
+            Manajemen Pengguna
+          </h2>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+            Lihat dan kelola semua pengguna terdaftar di platform.
+          </p>
+        </div>
+
+        <div class="card" style="overflow: hidden">
+          <div style="overflow-x: auto">
+            <table
+              style="width: 100%; border-collapse: collapse; font-size: 0.82rem"
+            >
+              <thead>
+                <tr
+                  style="background: #f8fafc; border-bottom: 1px solid #e2e8f0"
+                >
+                  <th
+                    style="
+                      padding: 0.875rem 1.25rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                    "
+                  >
+                    Pengguna
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                    "
+                  >
+                    Role
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                    "
+                  >
+                    Kampanye
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                    "
+                  >
+                    Terdaftar
+                  </th>
+                  <th
+                    style="
+                      padding: 0.875rem 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #475569;
+                    "
+                  >
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ SECTION: REPORTS ════ -->
+      <section id="section-reports" style="display: none">
+        <div style="margin-bottom: 1.5rem">
+          <h2 style="font-size: 1.3rem; font-weight: 700">
+            Statistik Platform
+          </h2>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+            Ringkasan performa dan data platform BantuIn.
+          </p>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom: 1.5rem">
+          <div
+            class="card stat-card"
+            style="padding: 1.25rem; grid-column: span 2"
+          >
+            <h3
+              style="font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem"
+            >
+              Distribusi Kategori Kampanye
+            </h3>
+            <div
+              id="category-bars"
+              style="display: flex; flex-direction: column; gap: 0.75rem"
+            ></div>
+          </div>
+          <div
+            class="card stat-card"
+            style="padding: 1.25rem; grid-column: span 2"
+          >
+            <h3
+              style="font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem"
+            >
+              Pertumbuhan Donasi per Bulan
+            </h3>
+            <div
+              id="monthly-bars"
+              style="
+                display: flex;
+                align-items: flex-end;
+                gap: 0.5rem;
+                height: 100px;
+              "
+            ></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════ MODAL DETAIL ═══════ -->
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal" id="modal-content">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- ═══════ TOAST CONTAINER ═══════ -->
+    <div id="toast-container"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         JAVASCRIPT (internal script — sesuai persyaratan)
+         Berisi: Variables, Data Types, Operators, Conditionals,
+                 Loops (for, while), DOM manipulation
+    ═══════════════════════════════════════════════════════════ -->
+    <script>
+      // ── Variables & Data Types ──
+      const APP_NAME = "BantuIn Admin"; // string constant
+      let currentSection = "overview"; // string variable
+      let approvalFilter = "pending"; // string variable
+
+      // Array of Objects — data kampanye
+      const campaigns = [
+        {
+          id: 1,
+          title: "Sedekah Pendidikan Anak Indonesia",
+          creator: "Rina Sari",
+          creatorEmail: "rina@mail.com",
+          role: "Fundraiser",
+          category: "Pendidikan",
+          target: 50000000,
+          collected: 37500000,
+          deadline: "2026-06-15",
+          status: "active",
+          submitted: "2026-01-10",
+          description:
+            "Membantu biaya pendidikan anak kurang mampu di pelosok Jawa Timur.",
+        },
+        {
+          id: 2,
+          title: "Air Bersih untuk Desa Terpencil",
+          creator: "Budi Santoso",
+          creatorEmail: "budi@mail.com",
+          role: "Fundraiser",
+          category: "Lingkungan",
+          target: 30000000,
+          collected: 18000000,
+          deadline: "2026-07-01",
+          status: "active",
+          submitted: "2026-01-22",
+          description:
+            "Pembangunan sumur bor dan instalasi air bersih di 3 desa terpencil.",
+        },
+        {
+          id: 3,
+          title: "Bantuan Medis Pasca Bencana",
+          creator: "Siti Rahayu",
+          creatorEmail: "siti@mail.com",
+          role: "Fundraiser",
+          category: "Kesehatan",
+          target: 100000000,
+          collected: 40000000,
+          deadline: "2026-05-20",
+          status: "active",
+          submitted: "2026-02-01",
+          description:
+            "Penyediaan obat-obatan dan layanan medis darurat bagi korban bencana.",
+        },
+        {
+          id: 4,
+          title: "Rumah Singgah Anak Yatim",
+          creator: "Hendra Wijaya",
+          creatorEmail: "hendra@mail.com",
+          role: "Fundraiser",
+          category: "Sosial",
+          target: 75000000,
+          collected: 0,
+          deadline: "2026-08-01",
+          status: "pending",
+          submitted: "2026-03-28",
+          description:
+            "Pembangunan rumah singgah yang layak untuk anak-anak yatim di Surabaya.",
+        },
+        {
+          id: 5,
+          title: "Beasiswa Mahasiswa Berprestasi",
+          creator: "Dewi Lestari",
+          creatorEmail: "dewi@mail.com",
+          role: "Fundraiser",
+          category: "Pendidikan",
+          target: 60000000,
+          collected: 0,
+          deadline: "2026-09-01",
+          status: "pending",
+          submitted: "2026-04-01",
+          description:
+            "Program beasiswa untuk 10 mahasiswa berprestasi dari keluarga kurang mampu.",
+        },
+        {
+          id: 6,
+          title: "Kebun Gizi Komunitas",
+          creator: "Agus Maulana",
+          creatorEmail: "agus@mail.com",
+          role: "Fundraiser",
+          category: "Kesehatan",
+          target: 20000000,
+          collected: 0,
+          deadline: "2026-07-20",
+          status: "pending",
+          submitted: "2026-04-03",
+          description:
+            "Pembuatan kebun gizi komunitas untuk mengatasi stunting di kelurahan.",
+        },
+        {
+          id: 7,
+          title: "Renovasi Masjid Tua Bersejarah",
+          creator: "Fajar Nugroho",
+          creatorEmail: "fajar@mail.com",
+          role: "Fundraiser",
+          category: "Sosial",
+          target: 40000000,
+          collected: 40000000,
+          deadline: "2026-03-01",
+          status: "done",
+          submitted: "2025-12-01",
+          description: "Renovasi masjid bersejarah abad ke-17 di Gresik.",
+        },
+        {
+          id: 8,
+          title: "Dapur Umum Lansia Terlantar",
+          creator: "Maya Putri",
+          creatorEmail: "maya@mail.com",
+          role: "Fundraiser",
+          category: "Sosial",
+          target: 15000000,
+          collected: 5000000,
+          deadline: "2026-04-01",
+          status: "rejected",
+          submitted: "2026-02-15",
+          description:
+            "Kampanye ini tidak memenuhi persyaratan dokumentasi yang diperlukan.",
+        },
+      ];
+
+      // Array of Objects — data pengguna
+      const users = [
+        {
+          id: 1,
+          name: "Rina Sari",
+          email: "rina@mail.com",
+          role: "Fundraiser",
+          campaigns: 3,
+          joined: "2025-08-14",
+          active: true,
+        },
+        {
+          id: 2,
+          name: "Budi Santoso",
+          email: "budi@mail.com",
+          role: "Fundraiser",
+          campaigns: 2,
+          joined: "2025-09-22",
+          active: true,
+        },
+        {
+          id: 3,
+          name: "Siti Rahayu",
+          email: "siti@mail.com",
+          role: "Fundraiser",
+          campaigns: 1,
+          joined: "2025-10-05",
+          active: true,
+        },
+        {
+          id: 4,
+          name: "Reza Ahmad",
+          email: "reza@mail.com",
+          role: "Donatur",
+          campaigns: 0,
+          joined: "2025-11-18",
+          active: true,
+        },
+        {
+          id: 5,
+          name: "Hendra Wijaya",
+          email: "hendra@mail.com",
+          role: "Fundraiser",
+          campaigns: 1,
+          joined: "2026-01-03",
+          active: true,
+        },
+        {
+          id: 6,
+          name: "Dewi Lestari",
+          email: "dewi@mail.com",
+          role: "Fundraiser",
+          campaigns: 1,
+          joined: "2026-02-10",
+          active: true,
+        },
+        {
+          id: 7,
+          name: "Agus Maulana",
+          email: "agus@mail.com",
+          role: "Fundraiser",
+          campaigns: 1,
+          joined: "2026-03-01",
+          active: true,
+        },
+        {
+          id: 8,
+          name: "Ayu Pramesti",
+          email: "ayu@mail.com",
+          role: "Donatur",
+          campaigns: 0,
+          joined: "2025-12-20",
+          active: true,
+        },
+        {
+          id: 9,
+          name: "Rizal H.",
+          email: "rizal@mail.com",
+          role: "Donatur",
+          campaigns: 0,
+          joined: "2026-01-15",
+          active: false,
+        },
+      ];
+
+      // ── Utility Functions ──
+      function formatRupiah(num) {
+        // Conditional for display
+        if (num >= 1000000000)
+          return "Rp " + (num / 1000000000).toFixed(1) + "M";
+        if (num >= 1000000) return "Rp " + (num / 1000000).toFixed(0) + "jt";
+        return "Rp " + num.toLocaleString("id-ID");
+      }
+
+      function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "Mei",
+          "Jun",
+          "Jul",
+          "Ags",
+          "Sep",
+          "Okt",
+          "Nov",
+          "Des",
+        ];
+        return d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+      }
+
+      function getStatusBadge(status) {
+        // Conditional statements (switch)
+        switch (status) {
+          case "pending":
+            return `<span class="badge badge-pending"><span class="pulse">●</span> Menunggu</span>`;
+          case "active":
+            return `<span class="badge badge-active">● Aktif</span>`;
+          case "rejected":
+            return `<span class="badge badge-rejected">✕ Ditolak</span>`;
+          case "done":
+            return `<span class="badge badge-done">✔ Selesai</span>`;
+          default:
+            return `<span class="badge">${status}</span>`;
+        }
+      }
+
+      // ── Navigation ──
+      function showSection(name) {
+        // Loop through all sections using for...of
+        const sections = [
+          "overview",
+          "approvals",
+          "campaigns",
+          "users",
+          "reports",
+        ];
+        for (const s of sections) {
+          const el = document.getElementById("section-" + s);
+          if (el) el.style.display = s === name ? "" : "none";
+        }
+
+        // Update active nav link — for loop
+        for (const s of sections) {
+          const nav = document.getElementById("nav-" + s);
+          if (nav) {
+            if (s === name) nav.classList.add("active");
+            else nav.classList.remove("active");
+          }
+        }
+
+        currentSection = name;
+        const titles = {
+          overview: "Overview",
+          approvals: "Persetujuan Kampanye",
+          campaigns: "Manajemen Kampanye",
+          users: "Manajemen Pengguna",
+          reports: "Statistik Platform",
+        };
+        document.getElementById("page-title").textContent =
+          titles[name] || name;
+
+        // Render section content
+        if (name === "approvals") renderApprovals();
+        if (name === "campaigns") renderCampaignTable();
+        if (name === "users") renderUsers();
+        if (name === "reports") renderReports();
+        if (name === "overview") renderOverview();
+
+        closeSidebar();
+      }
+
+      // ── Sidebar toggle (mobile) ──
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+        document.getElementById("overlay").classList.toggle("visible");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("visible");
+      }
+
+      // ── Toast notifications ──
+      function showToast(message, type) {
+        // Variables and operators
+        const container = document.getElementById("toast-container");
+        const colors = {
+          success: "#16a34a",
+          error: "#dc2626",
+          info: "#0ea5e9",
+          warning: "#d97706",
+        };
+        const color = colors[type] || colors.info;
+
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.style.cssText = `background:white;border-left:4px solid ${color};border-radius:0.75rem;padding:0.75rem 1rem;min-width:240px;box-shadow:0 4px 20px rgba(0,0,0,0.12);font-size:0.83rem;color:#0f172a;display:flex;align-items:center;gap:0.5rem;`;
+        toast.innerHTML = `<span style="color:${color};font-size:1rem;">${type === "success" ? "✓" : type === "error" ? "✕" : "ℹ"}</span>${message}`;
+        container.appendChild(toast);
+
+        // while loop for auto-removal timing
+        let elapsed = 0;
+        const interval = setInterval(() => {
+          elapsed += 100;
+          if (elapsed >= 3000) {
+            clearInterval(interval);
+            toast.classList.add("out");
+            setTimeout(() => toast.remove(), 350);
+          }
+        }, 100);
+      }
+
+      // ── Modal ──
+      function openModal(html) {
+        document.getElementById("modal-content").innerHTML = html;
+        document.getElementById("modal-backdrop").classList.add("open");
+      }
+      function closeModal() {
+        document.getElementById("modal-backdrop").classList.remove("open");
+      }
+
+      // ── Approve / Reject Campaign ──
+      function approveCampaign(id) {
+        // Find using for loop
+        for (let i = 0; i < campaigns.length; i++) {
+          if (campaigns[i].id === id) {
+            campaigns[i].status = "active";
+            break;
+          }
+        }
+        updatePendingCount();
+        closeModal();
+        renderApprovals();
+        renderOverview();
+        showToast("Kampanye berhasil disetujui!", "success");
+      }
+
+      function rejectCampaign(id) {
+        for (let i = 0; i < campaigns.length; i++) {
+          if (campaigns[i].id === id) {
+            campaigns[i].status = "rejected";
+            break;
+          }
+        }
+        updatePendingCount();
+        closeModal();
+        renderApprovals();
+        renderOverview();
+        showToast("Kampanye telah ditolak.", "error");
+      }
+
+      // ── Delete Campaign ──
+      function deleteCampaign(id) {
+        // Conditional confirm
+        if (
+          confirm(
+            "Yakin ingin menghapus kampanye ini? Tindakan ini tidak dapat dibatalkan.",
+          )
+        ) {
+          const idx = campaigns.findIndex((c) => c.id === id);
+          if (idx !== -1) campaigns.splice(idx, 1);
+          updatePendingCount();
+          closeModal();
+          renderCampaignTable();
+          renderOverview();
+          showToast("Kampanye berhasil dihapus.", "warning");
+        }
+      }
+
+      function updatePendingCount() {
+        let count = 0;
+        // for loop to count pending
+        for (let i = 0; i < campaigns.length; i++) {
+          if (campaigns[i].status === "pending") count++;
+        }
+        document.getElementById("stat-pending").textContent = count;
+        document.getElementById("approval-badge").textContent = count;
+        const tabCount = document.getElementById("tab-count-pending");
+        if (tabCount) tabCount.textContent = count;
+      }
+
+      // ── View Campaign Detail ──
+      function viewCampaign(id) {
+        let c = null;
+        // while-style search
+        let i = 0;
+        while (i < campaigns.length) {
+          if (campaigns[i].id === id) {
+            c = campaigns[i];
+            break;
+          }
+          i++;
+        }
+        if (!c) return;
+
+        const pct =
+          c.target > 0 ? Math.round((c.collected / c.target) * 100) : 0;
+        const html = `
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <h3 style="font-size:1rem;font-weight:700;">${c.title}</h3>
+            <button onclick="closeModal()" style="border:none;background:transparent;font-size:1.25rem;color:#94a3b8;cursor:pointer;">×</button>
+          </div>
+          <div style="background:#f8fafc;border-radius:0.625rem;padding:0.875rem;margin-bottom:1rem;font-size:0.82rem;color:#475569;">
+            ${c.description}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;font-size:0.8rem;">
+            <div><span style="color:#94a3b8;">Penggalang Dana</span><br/><strong>${c.creator}</strong></div>
+            <div><span style="color:#94a3b8;">Email</span><br/><strong>${c.creatorEmail}</strong></div>
+            <div><span style="color:#94a3b8;">Kategori</span><br/><strong>${c.category}</strong></div>
+            <div><span style="color:#94a3b8;">Deadline</span><br/><strong>${formatDate(c.deadline)}</strong></div>
+            <div><span style="color:#94a3b8;">Target</span><br/><strong style="color:var(--color-primary);">${formatRupiah(c.target)}</strong></div>
+            <div><span style="color:#94a3b8;">Terkumpul</span><br/><strong>${formatRupiah(c.collected)}</strong></div>
+          </div>
+          <div style="margin-bottom:0.5rem;display:flex;justify-content:space-between;font-size:0.78rem;color:#64748b;">
+            <span>Progress</span><span>${pct}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:1.25rem;"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div style="margin-bottom:1rem;">${getStatusBadge(c.status)}</div>
+          ${
+            c.status === "pending"
+              ? `
+            <div style="display:flex;gap:0.75rem;">
+              <button onclick="approveCampaign(${c.id})" style="flex:1;padding:0.625rem;background:#16a34a;color:white;border:none;border-radius:0.625rem;font-size:0.83rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">✓ Setujui</button>
+              <button onclick="rejectCampaign(${c.id})" style="flex:1;padding:0.625rem;background:#dc2626;color:white;border:none;border-radius:0.625rem;font-size:0.83rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">✕ Tolak</button>
+            </div>
+          `
+              : `
+            <div style="display:flex;gap:0.75rem;">
+              <button onclick="deleteCampaign(${c.id})" style="flex:1;padding:0.625rem;background:#f8fafc;color:#dc2626;border:1px solid #fecaca;border-radius:0.625rem;font-size:0.83rem;font-weight:600;cursor:pointer;">Hapus Kampanye</button>
+              <button onclick="closeModal()" style="flex:1;padding:0.625rem;background:#f8fafc;color:#475569;border:1px solid #e2e8f0;border-radius:0.625rem;font-size:0.83rem;cursor:pointer;">Tutup</button>
+            </div>
+          `
+          }
+        `;
+        openModal(html);
+      }
+
+      // ── Search handler ──
+      function handleSearch(val) {
+        if (val.length > 2) {
+          showSection("campaigns");
+          renderCampaignTable(val);
+        }
+      }
+
+      // ── Render: Overview ──
+      function renderOverview() {
+        // Pending list (using for loop)
+        const list = document.getElementById("overview-pending-list");
+        if (!list) return;
+        let pendingItems = [];
+        for (let i = 0; i < campaigns.length; i++) {
+          if (campaigns[i].status === "pending")
+            pendingItems.push(campaigns[i]);
+        }
+        if (pendingItems.length === 0) {
+          list.innerHTML = `<p style="font-size:0.82rem;color:#94a3b8;text-align:center;padding:1rem;">Tidak ada kampanye yang menunggu persetujuan.</p>`;
+        } else {
+          let html = "";
+          for (let i = 0; i < pendingItems.length; i++) {
+            const c = pendingItems[i];
+            html += `
+              <div class="campaign-row" style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem;border-radius:0.625rem;border:1px solid #e2e8f0;margin-bottom:0.5rem;cursor:pointer;" onclick="viewCampaign(${c.id})">
+                <div>
+                  <div style="font-size:0.83rem;font-weight:600;">${c.title}</div>
+                  <div style="font-size:0.72rem;color:#64748b;">oleh ${c.creator} · ${formatDate(c.submitted)}</div>
+                </div>
+                <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+                  <button onclick="event.stopPropagation();approveCampaign(${c.id})" style="padding:0.3rem 0.6rem;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:0.5rem;font-size:0.72rem;font-weight:600;">✓ Setujui</button>
+                  <button onclick="event.stopPropagation();rejectCampaign(${c.id})" style="padding:0.3rem 0.6rem;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:0.5rem;font-size:0.72rem;font-weight:600;">✕ Tolak</button>
+                </div>
+              </div>
+            `;
+          }
+          list.innerHTML = html;
+        }
+
+        // Status chart
+        const chartEl = document.getElementById("status-chart");
+        if (!chartEl) return;
+        const statusLabels = {
+          active: "Aktif",
+          pending: "Menunggu",
+          done: "Selesai",
+          rejected: "Ditolak",
+        };
+        const statusColors = {
+          active: "#16a34a",
+          pending: "#d97706",
+          done: "#0ea5e9",
+          rejected: "#dc2626",
+        };
+        // Count statuses using for loop
+        const counts = { active: 0, pending: 0, done: 0, rejected: 0 };
+        for (let i = 0; i < campaigns.length; i++) {
+          const s = campaigns[i].status;
+          if (counts[s] !== undefined) counts[s]++;
+        }
+        const total = campaigns.length;
+        let chartHtml = "";
+        for (const key in counts) {
+          const pct = total > 0 ? Math.round((counts[key] / total) * 100) : 0;
+          chartHtml += `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:0.25rem;">
+                <span style="color:#475569;">${statusLabels[key]}</span>
+                <span style="font-weight:600;">${counts[key]} (${pct}%)</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${statusColors[key]};"></div></div>
+            </div>
+          `;
+        }
+        chartEl.innerHTML = chartHtml;
+
+        // Activity feed (last 5 campaigns by submitted)
+        const actEl = document.getElementById("activity-feed");
+        if (!actEl) return;
+        const sorted = [...campaigns].sort(
+          (a, b) => new Date(b.submitted) - new Date(a.submitted),
+        );
+        let actHtml = "";
+        // for loop — show up to 5
+        for (let i = 0; i < Math.min(5, sorted.length); i++) {
+          const c = sorted[i];
+          actHtml += `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;">
+            <span style="width:6px;height:6px;border-radius:50%;background:${c.status === "pending" ? "#d97706" : c.status === "active" ? "#16a34a" : "#94a3b8"};flex-shrink:0;"></span>
+            <span style="color:#0f172a;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.title}</span>
+            <span style="color:#94a3b8;white-space:nowrap;">${formatDate(c.submitted)}</span>
+          </div>`;
+        }
+        actEl.innerHTML = actHtml;
+      }
+
+      // ── Render: Approvals ──
+      function filterApprovals(filter, btn) {
+        approvalFilter = filter;
+        // Update tab active state using for loop
+        const tabs = document.querySelectorAll(".tab-btn");
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].classList.remove("active");
+        }
+        btn.classList.add("active");
+        renderApprovals();
+      }
+
+      function renderApprovals() {
+        const container = document.getElementById("approvals-list");
+        if (!container) return;
+        let filtered = [];
+        // Loop + conditional for filtering
+        for (let i = 0; i < campaigns.length; i++) {
+          const c = campaigns[i];
+          const match = approvalFilter === "all" || c.status === approvalFilter;
+          if (match) filtered.push(c);
+        }
+        if (filtered.length === 0) {
+          container.innerHTML = `<div class="card" style="padding:2rem;text-align:center;color:#94a3b8;font-size:0.875rem;">Tidak ada kampanye ditemukan.</div>`;
+          return;
+        }
+        let html = "";
+        for (let i = 0; i < filtered.length; i++) {
+          const c = filtered[i];
+          html += `
+            <div class="card" style="padding:1.25rem;">
+              <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+                    <span style="font-size:0.95rem;font-weight:700;">${c.title}</span>
+                    ${getStatusBadge(c.status)}
+                  </div>
+                  <div style="font-size:0.78rem;color:#64748b;margin-bottom:0.75rem;">${c.description}</div>
+                  <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:0.78rem;color:#475569;">
+                    <span>👤 <strong>${c.creator}</strong> (${c.role})</span>
+                    <span>📧 ${c.creatorEmail}</span>
+                    <span>🏷 ${c.category}</span>
+                    <span>🎯 ${formatRupiah(c.target)}</span>
+                    <span>📅 Dikirim: ${formatDate(c.submitted)}</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+                  <button onclick="viewCampaign(${c.id})" style="padding:0.45rem 0.8rem;background:#f8fafc;color:#475569;border:1px solid #e2e8f0;border-radius:0.5rem;font-size:0.78rem;">Detail</button>
+                  ${
+                    c.status === "pending"
+                      ? `
+                    <button onclick="approveCampaign(${c.id})" style="padding:0.45rem 0.8rem;background:#16a34a;color:white;border:none;border-radius:0.5rem;font-size:0.78rem;font-weight:600;">✓ Setujui</button>
+                    <button onclick="rejectCampaign(${c.id})" style="padding:0.45rem 0.8rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;font-size:0.78rem;font-weight:600;">✕ Tolak</button>
+                  `
+                      : ""
+                  }
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        container.innerHTML = html;
+      }
+
+      // ── Render: Campaign Table ──
+      function renderCampaignTable(searchVal) {
+        const tbody = document.getElementById("campaigns-tbody");
+        if (!tbody) return;
+        const query = (searchVal || "").toLowerCase();
+        let filtered = [];
+        // for loop + conditional for search
+        for (let i = 0; i < campaigns.length; i++) {
+          const c = campaigns[i];
+          const match =
+            !query ||
+            c.title.toLowerCase().includes(query) ||
+            c.creator.toLowerCase().includes(query) ||
+            c.category.toLowerCase().includes(query);
+          if (match) filtered.push(c);
+        }
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="padding:2rem;text-align:center;color:#94a3b8;font-size:0.875rem;">Tidak ada kampanye ditemukan.</td></tr>`;
+          return;
+        }
+        let html = "";
+        for (let i = 0; i < filtered.length; i++) {
+          const c = filtered[i];
+          const pct =
+            c.target > 0 ? Math.round((c.collected / c.target) * 100) : 0;
+          html += `
+            <tr class="campaign-row" style="border-bottom:1px solid #f1f5f9;cursor:pointer;" onclick="viewCampaign(${c.id})">
+              <td style="padding:1rem 1.25rem;">
+                <div style="font-weight:600;font-size:0.82rem;">${c.title}</div>
+                <div style="font-size:0.72rem;color:#64748b;">${c.category}</div>
+              </td>
+              <td style="padding:1rem;">
+                <div style="font-size:0.82rem;">${c.creator}</div>
+                <div style="font-size:0.72rem;color:#64748b;">${c.creatorEmail}</div>
+              </td>
+              <td style="padding:1rem;font-size:0.82rem;font-weight:500;">${formatRupiah(c.target)}</td>
+              <td style="padding:1rem;min-width:120px;">
+                <div style="font-size:0.72rem;color:#64748b;margin-bottom:0.25rem;">${pct}%</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+              </td>
+              <td style="padding:1rem;">${getStatusBadge(c.status)}</td>
+              <td style="padding:1rem;">
+                <button onclick="event.stopPropagation();viewCampaign(${c.id})" style="padding:0.35rem 0.7rem;background:#fff1f4;color:var(--color-primary);border:1px solid #fecdd8;border-radius:0.5rem;font-size:0.75rem;font-weight:600;">Detail</button>
+              </td>
+            </tr>
+          `;
+        }
+        tbody.innerHTML = html;
+      }
+
+      // ── Render: Users ──
+      function renderUsers() {
+        const tbody = document.getElementById("users-tbody");
+        if (!tbody) return;
+        let html = "";
+        // for loop
+        for (let i = 0; i < users.length; i++) {
+          const u = users[i];
+          const initials = u.name
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .substring(0, 2);
+          const roleColor = u.role === "Fundraiser" ? "#be124c" : "#0ea5e9";
+          const roleBg = u.role === "Fundraiser" ? "#fff1f4" : "#f0f9ff";
+          html += `
+            <tr class="campaign-row" style="border-bottom:1px solid #f1f5f9;">
+              <td style="padding:1rem 1.25rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                  <span style="display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border-radius:50%;background:${roleBg};color:${roleColor};font-size:0.75rem;font-weight:700;flex-shrink:0;">${initials}</span>
+                  <div>
+                    <div style="font-weight:600;font-size:0.82rem;">${u.name}</div>
+                    <div style="font-size:0.72rem;color:#64748b;">${u.email}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="padding:1rem;">
+                <span style="background:${roleBg};color:${roleColor};padding:0.2rem 0.6rem;border-radius:9999px;font-size:0.72rem;font-weight:600;">${u.role}</span>
+              </td>
+              <td style="padding:1rem;font-size:0.82rem;">${u.campaigns} kampanye</td>
+              <td style="padding:1rem;font-size:0.82rem;color:#64748b;">${formatDate(u.joined)}</td>
+              <td style="padding:1rem;">
+                ${
+                  u.active
+                    ? `<span class="badge badge-active">● Aktif</span>`
+                    : `<span class="badge badge-rejected">● Nonaktif</span>`
+                }
+              </td>
+            </tr>
+          `;
+        }
+        tbody.innerHTML = html;
+      }
+
+      // ── Render: Reports ──
+      function renderReports() {
+        // Category distribution
+        const categories = {};
+        for (let i = 0; i < campaigns.length; i++) {
+          const cat = campaigns[i].category;
+          categories[cat] = (categories[cat] || 0) + 1;
+        }
+        const catEl = document.getElementById("category-bars");
+        if (!catEl) return;
+        const catColors = [
+          "#be124c",
+          "#0ea5e9",
+          "#16a34a",
+          "#d97706",
+          "#8b5cf6",
+        ];
+        let catHtml = "";
+        let colorIdx = 0;
+        const maxCat = Math.max(...Object.values(categories));
+        for (const cat in categories) {
+          const pct = Math.round((categories[cat] / maxCat) * 100);
+          catHtml += `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.25rem;">
+                <span>${cat}</span><span style="font-weight:600;">${categories[cat]} kampanye</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${catColors[colorIdx % catColors.length]};"></div></div>
+            </div>
+          `;
+          colorIdx++;
+        }
+        catEl.innerHTML = catHtml;
+
+        // Monthly bar chart (mock data)
+        const monthly = [12, 19, 25, 31, 45, 38, 52, 60, 48, 55, 72, 80];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "Mei",
+          "Jun",
+          "Jul",
+          "Ags",
+          "Sep",
+          "Okt",
+          "Nov",
+          "Des",
+        ];
+        const monthEl = document.getElementById("monthly-bars");
+        if (!monthEl) return;
+        const maxVal = Math.max(...monthly);
+        let monthHtml = "";
+        for (let i = 0; i < monthly.length; i++) {
+          const h = Math.round((monthly[i] / maxVal) * 100);
+          monthHtml += `
+            <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:0.25rem;">
+              <div style="width:100%;background:${i === 11 ? "var(--color-primary)" : "#e2e8f0"};border-radius:4px 4px 0 0;height:${h}px;transition:height 0.8s ease;min-height:4px;" title="${monthNames[i]}: ${monthly[i]}jt"></div>
+              <span style="font-size:0.6rem;color:#94a3b8;">${monthNames[i]}</span>
+            </div>
+          `;
+        }
+        monthEl.innerHTML = monthHtml;
+      }
+
+      // ── Init ──
+      function init() {
+        // Set date in topbar
+        const now = new Date();
+        const dateEl = document.getElementById("topbar-date");
+        if (dateEl)
+          dateEl.textContent = now.toLocaleDateString("id-ID", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+        // Scroll listener for topbar shadow (CSS positioning + JS)
+        window.addEventListener("scroll", () => {
+          const topbar = document.getElementById("topbar");
+          if (window.scrollY > 10) topbar.classList.add("scrolled");
+          else topbar.classList.remove("scrolled");
+        });
+
+        // Modal backdrop close on outside click
+        document
+          .getElementById("modal-backdrop")
+          .addEventListener("click", (e) => {
+            if (e.target === document.getElementById("modal-backdrop"))
+              closeModal();
+          });
+
+        // Show search on larger screens
+        const mq = window.matchMedia("(min-width: 640px)");
+        const toggleSearch = (e) => {
+          const s = document.querySelector(".topbar-search");
+          if (s) s.style.display = e.matches ? "block" : "none";
+          const d = document.getElementById("topbar-date");
+          if (d) d.style.display = e.matches ? "block" : "none";
+        };
+        mq.addEventListener("change", toggleSearch);
+        toggleSearch(mq);
+
+        renderOverview();
+        updatePendingCount();
+        showToast("Selamat datang di Admin Dashboard BantuIn!", "info");
+      }
+
+      // Run on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
