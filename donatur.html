@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Donatur — BantuIn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: { 50:"#fff1f4",100:"#ffe4ea",200:"#fecdd8",300:"#fda4b9",400:"#fb6f94",500:"#f43f73",600:"#e11d5d",700:"#be124c",800:"#9f123f",900:"#881337" },
+              ink: { 900:"#0f172a",700:"#334155",600:"#475569",500:"#64748b",200:"#e2e8f0",100:"#f1f5f9",50:"#f8fafc" },
+            },
+            boxShadow: { soft: "0 10px 30px rgba(2, 6, 23, 0.10)" },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-white text-ink-900 antialiased">
+    <div class="h-2 w-full bg-brand-700"></div>
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-ink-100">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between gap-3">
+          <a href="./index.html" class="flex items-center gap-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"/></svg>
+            </span>
+            <span class="text-lg font-semibold tracking-tight">BantuIn</span>
+          </a>
+          <nav class="hidden md:flex items-center gap-8 text-sm text-ink-700">
+            <a class="hover:text-ink-900" href="./index.html#kampanye">Kampanye</a>
+            <a class="font-semibold text-ink-900" href="./donatur.html">Dashboard</a>
+            <a class="hover:text-ink-900" href="./index.html#tentang">Tentang Kami</a>
+            <a class="hover:text-ink-900" href="./index.html#kontak">Kontak</a>
+          </nav>
+          <div class="flex items-center gap-2">
+            <a href="./index.html#kampanye" class="inline-flex h-10 items-center justify-center rounded-full bg-brand-700 px-5 text-sm font-semibold text-white shadow-sm hover:bg-brand-800">
+              Donasi Sekarang
+            </a>
+            <div class="relative">
+              <button id="userMenuButton" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-800 ring-1 ring-brand-100" type="button" aria-expanded="false" aria-controls="userMenu">
+                <span id="userInitial" class="text-sm font-semibold">?</span>
+              </button>
+              <div id="userMenu" class="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-soft hidden" role="menu">
+                <div class="px-4 py-3">
+                  <div id="menuUserName" class="text-sm font-semibold"></div>
+                  <div id="menuUserEmail" class="text-xs text-ink-600"></div>
+                  <div id="menuUserRole" class="mt-1 text-xs text-brand-700 font-semibold"></div>
+                </div>
+                <div class="border-t border-ink-100"></div>
+                <a href="./donatur.html" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-700 hover:bg-ink-50" role="menuitem">
+                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-ink-50">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7V11h-7v9Zm0-18v5h7V2h-7Z" fill="currentColor"/></svg>
+                  </span>
+                  Dashboard
+                </a>
+                <div class="border-t border-ink-100"></div>
+                <button type="button" onclick="logout()" class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-ink-700 hover:bg-ink-50" role="menuitem">
+                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-ink-50">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M10 17l1.4-1.4L8.8 13H20v-2H8.8l2.6-2.6L10 7l-7 7 7 7Z" fill="currentColor"/></svg>
+                  </span>
+                  Keluar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Welcome Banner -->
+      <section class="overflow-hidden rounded-3xl bg-ink-900 px-6 py-8 sm:px-10 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="text-white">
+            <p class="text-sm text-white/60">Dashboard Donatur</p>
+            <h1 id="welcomeName" class="text-2xl font-semibold mt-1">Selamat datang!</h1>
+            <p class="mt-2 text-sm text-white/70">Terima kasih telah menjadi bagian dari gerakan perubahan BantuIn.</p>
+          </div>
+          <a href="./index.html#kampanye" class="inline-flex h-11 items-center justify-center rounded-full bg-brand-700 px-6 text-sm font-semibold text-white hover:bg-brand-800 whitespace-nowrap">
+            Donasi Sekarang
+          </a>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="rounded-2xl bg-white/10 p-4">
+            <p class="text-xs text-white/60">Total Donasi</p>
+            <p class="mt-2 text-xl font-semibold text-white">Rp 1.750.000</p>
+          </div>
+          <div class="rounded-2xl bg-white/10 p-4">
+            <p class="text-xs text-white/60">Kampanye Didukung</p>
+            <p class="mt-2 text-xl font-semibold text-white">3</p>
+          </div>
+          <div class="rounded-2xl bg-white/10 p-4">
+            <p class="text-xs text-white/60">Terakhir Donasi</p>
+            <p class="mt-2 text-xl font-semibold text-white">1 Mar 2026</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <!-- Riwayat Donasi -->
+        <section class="rounded-2xl border border-ink-100 bg-white shadow-sm">
+          <div class="px-6 py-5 border-b border-ink-100">
+            <h2 class="text-base font-semibold">Riwayat Donasi</h2>
+            <p class="mt-1 text-sm text-ink-600">Semua transaksi donasi Anda</p>
+          </div>
+          <div class="p-4 sm:p-6 space-y-4">
+            <article class="flex items-center justify-between gap-4 rounded-2xl border border-ink-100 p-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-800">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 2h10v2H7V2Zm-2 4h14v16H5V6Zm3 4h8v2H8v-2Zm0 4h8v2H8v-2Z" fill="currentColor"/></svg>
+                </span>
+                <div>
+                  <div class="text-sm font-semibold">Pendidikan Anak Indonesia</div>
+                  <div class="text-xs text-ink-500">1 Maret 2026</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold text-brand-700">Rp 500.000</div>
+                <span class="mt-1 inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">Berhasil</span>
+              </div>
+            </article>
+            <article class="flex items-center justify-between gap-4 rounded-2xl border border-ink-100 p-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-800">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 2h10v2H7V2Zm-2 4h14v16H5V6Zm3 4h8v2H8v-2Zm0 4h8v2H8v-2Z" fill="currentColor"/></svg>
+                </span>
+                <div>
+                  <div class="text-sm font-semibold">Air Bersih untuk Desa Terpencil</div>
+                  <div class="text-xs text-ink-500">15 Februari 2026</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold text-brand-700">Rp 250.000</div>
+                <span class="mt-1 inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">Berhasil</span>
+              </div>
+            </article>
+            <article class="flex items-center justify-between gap-4 rounded-2xl border border-ink-100 p-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-800">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 2h10v2H7V2Zm-2 4h14v16H5V6Zm3 4h8v2H8v-2Zm0 4h8v2H8v-2Z" fill="currentColor"/></svg>
+                </span>
+                <div>
+                  <div class="text-sm font-semibold">Bantuan Medis Darurat</div>
+                  <div class="text-xs text-ink-500">2 Januari 2026</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold text-brand-700">Rp 1.000.000</div>
+                <span class="mt-1 inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">Berhasil</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Kampanye yang Didukung -->
+        <section class="rounded-2xl border border-ink-100 bg-white shadow-sm">
+          <div class="px-6 py-5 border-b border-ink-100">
+            <h2 class="text-base font-semibold">Kampanye yang Anda Dukung</h2>
+            <p class="mt-1 text-sm text-ink-600">Pantau perkembangan kampanye favorit</p>
+          </div>
+          <div class="p-4 sm:p-6 space-y-5">
+            <div>
+              <div class="flex items-center justify-between gap-4">
+                <div class="text-sm font-semibold">Pendidikan Anak Indonesia</div>
+                <div class="text-xs text-ink-600">75%</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-ink-100"><div class="h-2 w-[75%] rounded-full bg-ink-900"></div></div>
+              <div class="mt-2 text-xs text-ink-600">Rp 750jt terkumpul <span class="text-ink-500">dari Rp 1M</span></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between gap-4">
+                <div class="text-sm font-semibold">Air Bersih untuk Desa Terpencil</div>
+                <div class="text-xs text-ink-600">60%</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-ink-100"><div class="h-2 w-[60%] rounded-full bg-ink-900"></div></div>
+              <div class="mt-2 text-xs text-ink-600">Rp 300jt terkumpul <span class="text-ink-500">dari Rp 500jt</span></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between gap-4">
+                <div class="text-sm font-semibold">Bantuan Medis Darurat</div>
+                <div class="text-xs text-ink-600">40%</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-ink-100"><div class="h-2 w-[40%] rounded-full bg-ink-900"></div></div>
+              <div class="mt-2 text-xs text-ink-600">Rp 200jt terkumpul <span class="text-ink-500">dari Rp 500jt</span></div>
+            </div>
+            <a href="./index.html#kampanye" class="mt-2 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800">
+              Jelajahi Kampanye Lainnya
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="border-t border-ink-100 bg-ink-50 mt-10">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8 lg:flex-row lg:items-center lg:justify-between">
+        <p class="text-sm text-ink-600">© <span id="year"></span> BantuIn. Bersama kita berbagi dan mengubah masa depan.</p>
+        <div class="flex flex-wrap gap-3 text-sm text-ink-600">
+          <a href="./index.html#tentang" class="hover:text-ink-900">Tentang</a>
+          <a href="./index.html#kontak" class="hover:text-ink-900">Kontak</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // ── Shared Auth Helpers ──
+      function getCurrentUser() { return JSON.parse(localStorage.getItem('bantuin_current_user') || 'null'); }
+      function logout() { localStorage.removeItem('bantuin_current_user'); window.location.href = './index.html'; }
+      function getDashboardUrl(role) {
+        if (role === 'admin') return './admin.html';
+        if (role === 'fundraiser') return './fundraiser.html';
+        return './donatur.html';
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const user = getCurrentUser();
+        // Guard: redirect to home if not logged in or wrong role
+        if (!user) { window.location.href = './index.html'; return; }
+        if (user.role !== 'donatur' && user.role !== 'admin') {
+          window.location.href = getDashboardUrl(user.role); return;
+        }
+
+        // Populate user info
+        document.getElementById('welcomeName').textContent = 'Selamat datang, ' + user.name + '!';
+        document.getElementById('userInitial').textContent = user.name.charAt(0).toUpperCase();
+        document.getElementById('menuUserName').textContent = user.name;
+        document.getElementById('menuUserEmail').textContent = user.email;
+        document.getElementById('menuUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+        // User menu toggle
+        const btn = document.getElementById('userMenuButton');
+        const menu = document.getElementById('userMenu');
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          menu.classList.toggle('hidden');
+        });
+        document.addEventListener('click', function () { menu.classList.add('hidden'); });
+      });
+    </script>
+  </body>
+</html>

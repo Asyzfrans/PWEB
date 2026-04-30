@@ -2367,6 +2367,16 @@
         showToast("Selamat datang di Admin Dashboard BantuIn!", "info");
       }
 
+      // ── Auth guard: only admin can access this page ──
+      (function () {
+        const user = JSON.parse(localStorage.getItem('bantuin_current_user') || 'null');
+        if (!user) { window.location.href = './index.html'; }
+        else if (user.role !== 'admin') {
+          const url = user.role === 'fundraiser' ? './fundraiser.html' : './donatur.html';
+          window.location.href = url;
+        }
+      })();
+
       // Run on DOMContentLoaded
       document.addEventListener("DOMContentLoaded", init);
     </script>

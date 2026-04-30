@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BantuIn — Bersama Kita Bisa Mengubah Hidup</title>
-
-    <!-- Tailwind via CDN (ready-to-run). For production, switch to Tailwind build pipeline. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -13,49 +11,28 @@
           extend: {
             colors: {
               brand: {
-                50: "#fff1f4",
-                100: "#ffe4ea",
-                200: "#fecdd8",
-                300: "#fda4b9",
-                400: "#fb6f94",
-                500: "#f43f73",
-                600: "#e11d5d",
-                700: "#be124c",
-                800: "#9f123f",
-                900: "#881337",
+                50: "#fff1f4", 100: "#ffe4ea", 200: "#fecdd8", 300: "#fda4b9",
+                400: "#fb6f94", 500: "#f43f73", 600: "#e11d5d", 700: "#be124c",
+                800: "#9f123f", 900: "#881337",
               },
               ink: {
-                900: "#0f172a",
-                700: "#334155",
-                600: "#475569",
-                500: "#64748b",
-                200: "#e2e8f0",
-                100: "#f1f5f9",
-                50: "#f8fafc",
+                900: "#0f172a", 700: "#334155", 600: "#475569", 500: "#64748b",
+                200: "#e2e8f0", 100: "#f1f5f9", 50: "#f8fafc",
               },
             },
-            boxShadow: {
-              soft: "0 10px 30px rgba(2, 6, 23, 0.10)",
-            },
+            boxShadow: { soft: "0 10px 30px rgba(2, 6, 23, 0.10)" },
           },
         },
       };
     </script>
-
     <style>
-      /* Slight blur overlay like the screenshot hero */
       .hero-overlay {
-        background: linear-gradient(
-          to right,
-          rgba(2, 6, 23, 0.55),
-          rgba(2, 6, 23, 0.25),
-          rgba(2, 6, 23, 0.55)
-        );
+        background: linear-gradient(to right, rgba(2,6,23,0.55), rgba(2,6,23,0.25), rgba(2,6,23,0.55));
       }
     </style>
   </head>
+
   <body class="bg-white text-ink-900 antialiased">
-    <!-- Top progress bar accent (seen in screenshots as a red strip) -->
     <div class="h-2 w-full bg-brand-700"></div>
 
     <!-- Navbar -->
@@ -65,9 +42,7 @@
           <a href="./index.html" class="flex items-center gap-2">
             <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-white">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"
-                />
+                <path d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"/>
               </svg>
             </span>
             <span class="text-lg font-semibold tracking-tight">BantuIn</span>
@@ -81,99 +56,50 @@
           </nav>
 
           <div class="flex items-center gap-2">
-            <button
-              id="btnSearch"
-              class="hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-ink-50"
-              aria-label="Cari"
-              type="button"
-            >
+            <button id="btnSearch" class="hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-ink-50" aria-label="Cari" type="button">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M10.5 18.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                <path d="M20.5 20.5l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M10.5 18.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M20.5 20.5l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </button>
 
-            <!-- Auth state: default shows Masuk. JS can swap to user menu. -->
-            <button
-              id="btnOpenAuth"
-              class="hidden sm:inline-flex h-10 items-center justify-center rounded-full px-5 text-sm font-medium text-ink-700 hover:bg-ink-50"
-              type="button"
-            >
+            <!-- Tombol Masuk: hanya tampil jika BELUM login -->
+            <button id="btnLogin" type="button" data-open-auth
+              class="hidden sm:inline-flex h-10 items-center justify-center rounded-full px-5 text-sm font-medium text-ink-700 hover:bg-ink-50">
               Masuk
             </button>
 
-            <!-- User avatar + dropdown (hidden until logged-in state) -->
+            <!-- User menu: hanya tampil jika SUDAH login -->
             <div id="userMenuWrapper" class="relative hidden">
-              <button
-                id="userMenuButton"
+              <button id="userMenuButton"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-800 ring-1 ring-brand-100"
-                type="button"
-                aria-expanded="false"
-                aria-controls="userMenu"
-                aria-label="Menu pengguna"
-              >
-                <span class="text-sm font-semibold">R</span>
+                type="button" aria-expanded="false" aria-controls="userMenu" aria-label="Menu pengguna">
+                <span id="userInitial" class="text-sm font-semibold">?</span>
               </button>
-
-              <div
-                id="userMenu"
+              <div id="userMenu"
                 class="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-soft hidden"
-                role="menu"
-                aria-label="Menu pengguna"
-              >
+                role="menu" aria-label="Menu pengguna">
                 <div class="px-4 py-3">
-                  <div class="text-sm font-semibold">reza</div>
-                  <div class="text-xs text-ink-600">reza@gmail.com</div>
-                  <div class="mt-1 text-xs text-brand-700 font-semibold">Donatur</div>
+                  <div id="menuUserName" class="text-sm font-semibold"></div>
+                  <div id="menuUserEmail" class="text-xs text-ink-600"></div>
+                  <div id="menuUserRole" class="mt-1 text-xs text-brand-700 font-semibold"></div>
                 </div>
                 <div class="border-t border-ink-100"></div>
-                <a
-                  href="./dashboard/donatur.html"
-                  class="flex items-center gap-3 px-4 py-3 text-sm text-ink-700 hover:bg-ink-50"
-                  role="menuitem"
-                >
+                <a id="menuDashboardLink" href="#"
+                  class="flex items-center gap-3 px-4 py-3 text-sm text-ink-700 hover:bg-ink-50" role="menuitem">
                   <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-ink-50">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7V11h-7v9Zm0-18v5h7V2h-7Z"
-                        fill="currentColor"
-                      />
+                      <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7V11h-7v9Zm0-18v5h7V2h-7Z" fill="currentColor"/>
                     </svg>
                   </span>
                   Dashboard
                 </a>
-                <a
-                  href="./profile.html"
-                  class="flex items-center gap-3 px-4 py-3 text-sm text-ink-700 hover:bg-ink-50"
-                  role="menuitem"
-                >
-                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-ink-50">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
-                  Profil Saya
-                </a>
                 <div class="border-t border-ink-100"></div>
-                <button
-                  type="button"
-                  id="btnLogout"
-                  class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-ink-700 hover:bg-ink-50"
-                  role="menuitem"
-                >
+                <button type="button" id="btnLogout" onclick="logout()"
+                  class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-ink-700 hover:bg-ink-50" role="menuitem">
                   <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-ink-50">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M10 17l1.4-1.4L8.8 13H20v-2H8.8l2.6-2.6L10 7l-7 7 7 7Z"
-                        fill="currentColor"
-                      />
+                      <path d="M10 17l1.4-1.4L8.8 13H20v-2H8.8l2.6-2.6L10 7l-7 7 7 7Z" fill="currentColor"/>
                     </svg>
                   </span>
                   Keluar
@@ -181,23 +107,16 @@
               </div>
             </div>
 
-            <a
-              href="#kampanye"
-              class="inline-flex h-10 items-center justify-center rounded-full bg-brand-700 px-5 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2"
-            >
+            <a href="#kampanye"
+              class="inline-flex h-10 items-center justify-center rounded-full bg-brand-700 px-5 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
               Donasi Sekarang
             </a>
 
-            <button
-              id="btnMobileMenu"
+            <button id="btnMobileMenu"
               class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-ink-50"
-              type="button"
-              aria-label="Buka menu"
-              aria-expanded="false"
-              aria-controls="mobileMenu"
-            >
+              type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </button>
           </div>
@@ -210,11 +129,7 @@
             <a class="rounded-xl px-3 py-2 text-sm text-ink-700 hover:bg-ink-50" href="#tentang">Tentang Kami</a>
             <a class="rounded-xl px-3 py-2 text-sm text-ink-700 hover:bg-ink-50" href="#dampak">Dampak Kami</a>
             <a class="rounded-xl px-3 py-2 text-sm text-ink-700 hover:bg-ink-50" href="#kontak">Kontak</a>
-            <button
-              class="mt-2 inline-flex h-10 items-center justify-center rounded-xl bg-ink-900 px-4 text-sm font-semibold text-white"
-              type="button"
-              data-open-auth
-            >
+            <button id="btnMobileAuth" class="mt-2 inline-flex h-10 items-center justify-center rounded-xl bg-ink-900 px-4 text-sm font-semibold text-white" type="button" data-open-auth>
               Masuk / Daftar
             </button>
           </div>
@@ -225,37 +140,24 @@
     <!-- Hero -->
     <section class="relative">
       <div class="relative h-[520px] sm:h-[560px]">
-        <!-- Replace with your image: public/assets/hero.jpg -->
-        <div
-          class="absolute inset-0 bg-center bg-cover"
-          style="
-            background-image: url('https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=2400&q=60');
-          "
-        ></div>
+        <div class="absolute inset-0 bg-center bg-cover"
+          style="background-image: url('https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=2400&q=60');">
+        </div>
         <div class="absolute inset-0 hero-overlay"></div>
-
         <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div class="flex h-[520px] sm:h-[560px] items-center justify-center text-center">
             <div class="max-w-3xl">
               <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white">
-                Bersama Kita Bisa Mengubah
-                <span class="block">Hidup</span>
+                Bersama Kita Bisa Mengubah <span class="block">Hidup</span>
               </h1>
               <p class="mt-4 text-base sm:text-lg text-white/85">
-                Setiap donasi membuat perbedaan. Bergabunglah dengan kami untuk membawa harapan, kesehatan, dan
-                kebahagiaan bagi masyarakat yang membutuhkan di seluruh dunia.
+                Setiap donasi membuat perbedaan. Bergabunglah dengan kami untuk membawa harapan, kesehatan, dan kebahagiaan bagi masyarakat yang membutuhkan di seluruh dunia.
               </p>
               <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a
-                  href="#kampanye"
-                  class="inline-flex h-11 items-center justify-center rounded-full bg-brand-700 px-7 text-sm font-semibold text-white shadow-soft hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-transparent"
-                >
+                <a href="#kampanye" class="inline-flex h-11 items-center justify-center rounded-full bg-brand-700 px-7 text-sm font-semibold text-white shadow-soft hover:bg-brand-800">
                   Mulai Donasi
                 </a>
-                <a
-                  href="#tentang"
-                  class="inline-flex h-11 items-center justify-center rounded-full border border-white/40 bg-white/10 px-7 text-sm font-semibold text-white hover:bg-white/15"
-                >
+                <a href="#tentang" class="inline-flex h-11 items-center justify-center rounded-full border border-white/40 bg-white/10 px-7 text-sm font-semibold text-white hover:bg-white/15">
                   Pelajari Lebih Lanjut
                 </a>
               </div>
@@ -270,329 +172,220 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Kampanye Unggulan</h2>
-          <p class="mt-3 text-ink-600">
-            Jelajahi kampanye aktif kami dan buat dampak langsung pada tujuan yang paling berarti bagi Anda.
-          </p>
+          <p class="mt-3 text-ink-600">Jelajahi kampanye aktif kami dan buat dampak langsung pada tujuan yang paling berarti bagi Anda.</p>
         </div>
-
         <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <!-- Card -->
+          <!-- Card 1 -->
           <article class="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm hover:shadow-soft transition">
             <div class="relative h-36 bg-ink-100">
-              <img
-                alt="Education"
-                class="h-full w-full object-cover"
-                src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1200&q=60"
-              />
-              <span
-                class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700"
-                >Education</span
-              >
+              <img alt="Education" class="h-full w-full object-cover" src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1200&q=60"/>
+              <span class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700">Pendidikan</span>
             </div>
             <div class="p-4">
-              <h3 class="text-base font-semibold">Education for Every Child</h3>
-              <p class="mt-2 line-clamp-2 text-sm text-ink-600">
-                Help us provide quality education, books, and school supplies for children in need.
-              </p>
-
+              <h3 class="text-base font-semibold">Pendidikan untuk Setiap Anak</h3>
+              <p class="mt-2 line-clamp-2 text-sm text-ink-600">Bantu kami menyediakan pendidikan berkualitas, buku, dan perlengkapan sekolah bagi anak-anak yang membutuhkan.</p>
               <div class="mt-4">
-                <div class="h-2 rounded-full bg-ink-100">
-                  <div class="h-2 w-[55%] rounded-full bg-ink-900"></div>
-                </div>
+                <div class="h-2 rounded-full bg-ink-100"><div class="h-2 w-[55%] rounded-full bg-ink-900"></div></div>
                 <div class="mt-3 flex items-center justify-between text-xs text-ink-600">
-                  <div>
-                    <div class="text-brand-700 font-semibold">Rp 45.000</div>
-                    <div>terkumpul</div>
-                  </div>
-                  <div class="text-right">
-                    <div class="font-medium text-ink-700">Target:</div>
-                    <div>Rp 75.000</div>
-                  </div>
+                  <span><strong class="text-ink-900">Rp 550jt</strong> terkumpul</span>
+                  <span>55%</span>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-ink-500">
-                  <span>—</span>
-                  <span>23 hari lagi</span>
-                </div>
+                <div class="mt-1 text-xs text-ink-500">dari Rp 1M target</div>
               </div>
+              <button type="button" data-open-auth class="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800">
+                Donasi Sekarang
+              </button>
             </div>
           </article>
-
+          <!-- Card 2 -->
           <article class="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm hover:shadow-soft transition">
             <div class="relative h-36 bg-ink-100">
-              <img
-                alt="Water"
-                class="h-full w-full object-cover"
-                src="https://www.iisd.org/sites/default/files/styles/og_image/public/2022-03/hand-washing-water.jpg?itok=542sjljT"
-              />
-              <span
-                class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700"
-                >Water &amp; Sanitation</span
-              >
+              <img alt="Clean Water" class="h-full w-full object-cover" src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=1200&q=60"/>
+              <span class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700">Air Bersih</span>
             </div>
             <div class="p-4">
-              <h3 class="text-base font-semibold">Clean Water for Communities</h3>
-              <p class="mt-2 line-clamp-2 text-sm text-ink-600">
-                Build wells and water filtration systems to provide safe water access.
-              </p>
+              <h3 class="text-base font-semibold">Air Bersih untuk Desa Terpencil</h3>
+              <p class="mt-2 line-clamp-2 text-sm text-ink-600">Membangun sumur bor dan sistem distribusi air bersih di wilayah yang kekurangan air.</p>
               <div class="mt-4">
-                <div class="h-2 rounded-full bg-ink-100">
-                  <div class="h-2 w-[62%] rounded-full bg-ink-900"></div>
-                </div>
+                <div class="h-2 rounded-full bg-ink-100"><div class="h-2 w-[60%] rounded-full bg-ink-900"></div></div>
                 <div class="mt-3 flex items-center justify-between text-xs text-ink-600">
-                  <div>
-                    <div class="text-brand-700 font-semibold">Rp 62.000</div>
-                    <div>terkumpul</div>
-                  </div>
-                  <div class="text-right">
-                    <div class="font-medium text-ink-700">Target:</div>
-                    <div>Rp 100.000</div>
-                  </div>
+                  <span><strong class="text-ink-900">Rp 300jt</strong> terkumpul</span>
+                  <span>60%</span>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-ink-500">
-                  <span>1245 donatur</span>
-                  <span>15 hari lagi</span>
-                </div>
+                <div class="mt-1 text-xs text-ink-500">dari Rp 500jt target</div>
               </div>
+              <button type="button" data-open-auth class="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800">
+                Donasi Sekarang
+              </button>
             </div>
           </article>
-
+          <!-- Card 3 -->
           <article class="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm hover:shadow-soft transition">
             <div class="relative h-36 bg-ink-100">
-              <img
-                alt="Healthcare"
-                class="h-full w-full object-cover"
-                src="https://cdn.corporatefinanceinstitute.com/assets/healthcare-sector-1024x683.jpeg"
-              />
-              <span
-                class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700"
-                >Healthcare</span
-              >
+              <img alt="Health" class="h-full w-full object-cover" src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1200&q=60"/>
+              <span class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700">Kesehatan</span>
             </div>
             <div class="p-4">
-              <h3 class="text-base font-semibold">Healthcare for All</h3>
-              <p class="mt-2 line-clamp-2 text-sm text-ink-600">
-                Support mobile health clinics and essential medical services for remote areas.
-              </p>
+              <h3 class="text-base font-semibold">Bantuan Medis Darurat</h3>
+              <p class="mt-2 line-clamp-2 text-sm text-ink-600">Mendukung akses layanan kesehatan bagi masyarakat yang tidak mampu membayar biaya medis.</p>
               <div class="mt-4">
-                <div class="h-2 rounded-full bg-ink-100">
-                  <div class="h-2 w-[38%] rounded-full bg-ink-900"></div>
-                </div>
+                <div class="h-2 rounded-full bg-ink-100"><div class="h-2 w-[40%] rounded-full bg-ink-900"></div></div>
                 <div class="mt-3 flex items-center justify-between text-xs text-ink-600">
-                  <div>
-                    <div class="text-brand-700 font-semibold">Rp 38.500</div>
-                    <div>terkumpul</div>
-                  </div>
-                  <div class="text-right">
-                    <div class="font-medium text-ink-700">Target:</div>
-                    <div>Rp 50.000</div>
-                  </div>
+                  <span><strong class="text-ink-900">Rp 200jt</strong> terkumpul</span>
+                  <span>40%</span>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-ink-500">
-                  <span>567 donatur</span>
-                  <span>30 hari lagi</span>
-                </div>
+                <div class="mt-1 text-xs text-ink-500">dari Rp 500jt target</div>
               </div>
+              <button type="button" data-open-auth class="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800">
+                Donasi Sekarang
+              </button>
             </div>
           </article>
-
+          <!-- Card 4 -->
           <article class="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm hover:shadow-soft transition">
             <div class="relative h-36 bg-ink-100">
-              <img
-                alt="Emergency"
-                class="h-full w-full object-cover"
-                src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?auto=format&fit=crop&w=1200&q=60"
-              />
-              <span
-                class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700"
-                >Emergency Relief</span
-              >
+              <img alt="Community" class="h-full w-full object-cover" src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1200&q=60"/>
+              <span class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-ink-700">Komunitas</span>
             </div>
             <div class="p-4">
-              <h3 class="text-base font-semibold">Disaster Relief Fund</h3>
-              <p class="mt-2 line-clamp-2 text-sm text-ink-600">
-                Provide immediate aid and long-term recovery support for affected communities.
-              </p>
+              <h3 class="text-base font-semibold">Sedekah Pendidikan Anak</h3>
+              <p class="mt-2 line-clamp-2 text-sm text-ink-600">Biaya seragam dan perlengkapan bagi 20 siswa kurang mampu di daerah terpencil.</p>
               <div class="mt-4">
-                <div class="h-2 rounded-full bg-ink-100">
-                  <div class="h-2 w-[63%] rounded-full bg-ink-900"></div>
-                </div>
+                <div class="h-2 rounded-full bg-ink-100"><div class="h-2 w-[75%] rounded-full bg-ink-900"></div></div>
                 <div class="mt-3 flex items-center justify-between text-xs text-ink-600">
-                  <div>
-                    <div class="text-brand-700 font-semibold">Rp 125.000</div>
-                    <div>terkumpul</div>
-                  </div>
-                  <div class="text-right">
-                    <div class="font-medium text-ink-700">Target:</div>
-                    <div>Rp 200.000</div>
-                  </div>
+                  <span><strong class="text-ink-900">Rp 75jt</strong> terkumpul</span>
+                  <span>75%</span>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-ink-500">
-                  <span>2134 donatur</span>
-                  <span>45 hari lagi</span>
-                </div>
+                <div class="mt-1 text-xs text-ink-500">dari Rp 100jt target</div>
               </div>
+              <button type="button" data-open-auth class="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800">
+                Donasi Sekarang
+              </button>
             </div>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- Dampak Global -->
-    <section id="dampak" class="bg-brand-700">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
-        <div class="text-center text-white">
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Dampak Global Kami</h2>
-          <p class="mt-3 text-white/85 max-w-3xl mx-auto">
-            Berkat donatur yang dermawan dan relawan yang berdedikasi, kami telah membuat perbedaan nyata di komunitas di
-            seluruh dunia.
-          </p>
-        </div>
-
-        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="rounded-2xl bg-white/10 px-6 py-8 text-center">
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3Zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3Zm0 2c-2.3 0-7 1.2-7 3.5V20h14v-3.5C15 14.2 10.3 13 8 13Zm8 0c-.3 0-.7 0-1 .1 1.1.8 2 1.8 2 3.4V20h7v-3.5c0-2.3-4.7-3.5-7-3.5Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <div class="mt-5 text-4xl font-semibold">2.5Jt+</div>
-            <div class="mt-1 text-sm text-white/85">Kehidupan Terbantu</div>
-          </div>
-          <div class="rounded-2xl bg-white/10 px-6 py-8 text-center">
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"
-                />
-              </svg>
-            </div>
-            <div class="mt-5 text-4xl font-semibold">150Rb+</div>
-            <div class="mt-1 text-sm text-white/85">Donatur di Seluruh Dunia</div>
-          </div>
-          <div class="rounded-2xl bg-white/10 px-6 py-8 text-center">
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M12 4a8 8 0 0 0 0 16c2.2 0 3.7-1.1 3.7-2.4 0-1.2-1.3-1.7-2.8-2.2-1.4-.5-2.9-1-2.9-2.5 0-1.4 1.2-2.3 3-2.3 1.1 0 2.1.3 2.9.8V6.7c-.8-.4-1.8-.6-2.9-.6-3.1 0-5.2 1.7-5.2 4.3 0 2.7 2.2 3.4 4 4 1.4.5 1.7.8 1.7 1.3 0 .6-.7 1-1.9 1-1.4 0-2.7-.5-3.8-1.4v2.8c1.1.7 2.4 1.1 3.8 1.1"
-                  fill="currentColor"
-                  opacity=".0"
-                />
-              </svg>
-            </div>
-            <div class="mt-5 text-4xl font-semibold">65+</div>
-            <div class="mt-1 text-sm text-white/85">Negara Terjangkau</div>
-          </div>
-          <div class="rounded-2xl bg-white/10 px-6 py-8 text-center">
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 3-3 3 3 0 0 1-3 3Z" />
-              </svg>
-            </div>
-            <div class="mt-5 text-4xl font-semibold">$45Jt+</div>
-            <div class="mt-1 text-sm text-white/85">Dana Terkumpul</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tentang / Join -->
-    <section id="tentang" class="bg-ink-50 py-16 sm:py-20">
+    <!-- Tentang Kami -->
+    <section id="tentang" class="py-16 sm:py-20 bg-ink-50">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div class="grid gap-12 lg:grid-cols-2 items-center">
           <div>
-            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">
-              Bergabunglah dengan<br class="hidden sm:block" />
-              Komunitas Pembuat Perubahan Kami
-            </h2>
-            <p class="mt-4 text-ink-600">
-              Apakah Anda berdonasi, menjadi relawan, atau menyebarkan kesadaran, kontribusi Anda menciptakan dampak yang
-              berkelanjutan. Bersama-sama, kita bisa membangun masa depan yang lebih baik bagi komunitas yang membutuhkan.
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Tentang BantuIn</h2>
+            <p class="mt-4 text-ink-600 leading-relaxed">
+              BantuIn adalah platform donasi digital terpercaya yang menghubungkan donatur dengan kampanye sosial yang berdampak nyata. Kami percaya bahwa setiap orang bisa menjadi agen perubahan.
             </p>
-            <div class="mt-7 flex flex-col sm:flex-row gap-3">
-              <a
-                href="#"
-                class="inline-flex h-11 items-center justify-center rounded-full bg-brand-700 px-7 text-sm font-semibold text-white shadow-sm hover:bg-brand-800"
-              >
-                Jadi Relawan
-              </a>
-              <a
-                href="#kampanye"
-                class="inline-flex h-11 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-ink-900 ring-1 ring-ink-200 hover:bg-ink-50"
-              >
-                Jelajahi Kampanye
-              </a>
+            <p class="mt-3 text-ink-600 leading-relaxed">
+              Sejak berdiri, kami telah membantu ribuan kampanye sukses mencapai target dan mengubah kehidupan nyata di seluruh Indonesia.
+            </p>
+            <div class="mt-8 grid grid-cols-3 gap-6">
+              <div>
+                <div class="text-2xl font-semibold text-brand-700">Rp 5M+</div>
+                <div class="mt-1 text-sm text-ink-600">Dana Terkumpul</div>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold text-brand-700">1.200+</div>
+                <div class="mt-1 text-sm text-ink-600">Kampanye Sukses</div>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold text-brand-700">50K+</div>
+                <div class="mt-1 text-sm text-ink-600">Donatur Aktif</div>
+              </div>
             </div>
           </div>
-
-          <div class="overflow-hidden rounded-3xl border border-ink-100 bg-white shadow-soft">
-            <img
-              class="h-[320px] w-full object-cover"
-              alt="Relawan"
-              src="https://images.unsplash.com/photo-1520975958225-3f61d2d0d4f0?auto=format&fit=crop&w=1600&q=60"
-            />
+          <div class="rounded-3xl overflow-hidden shadow-soft">
+            <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=60" alt="Tentang BantuIn" class="w-full h-80 object-cover"/>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dampak -->
+    <section id="dampak" class="py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Dampak Kami</h2>
+          <p class="mt-3 text-ink-600">Lihat bagaimana kontribusi Anda mengubah kehidupan nyata</p>
+        </div>
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+            <div class="text-3xl font-semibold text-brand-700">10K+</div>
+            <div class="mt-2 text-sm font-medium">Anak Terbantu</div>
+            <div class="mt-1 text-xs text-ink-500">Mendapat akses pendidikan</div>
+          </div>
+          <div class="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+            <div class="text-3xl font-semibold text-brand-700">250+</div>
+            <div class="mt-2 text-sm font-medium">Desa Terlayani</div>
+            <div class="mt-1 text-xs text-ink-500">Air bersih tersedia</div>
+          </div>
+          <div class="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+            <div class="text-3xl font-semibold text-brand-700">5K+</div>
+            <div class="mt-2 text-sm font-medium">Pasien Tertolong</div>
+            <div class="mt-1 text-xs text-ink-500">Biaya medis ditanggung</div>
+          </div>
+          <div class="rounded-2xl border border-ink-100 bg-white p-6 text-center shadow-sm">
+            <div class="text-3xl font-semibold text-brand-700">98%</div>
+            <div class="mt-2 text-sm font-medium">Dana Tersalurkan</div>
+            <div class="mt-1 text-xs text-ink-500">Transparan & akuntabel</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kontak -->
+    <section id="kontak" class="py-16 sm:py-20 bg-ink-50">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Hubungi Kami</h2>
+        <p class="mt-3 text-ink-600">Ada pertanyaan atau ingin bermitra? Kami senang mendengar dari Anda.</p>
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="mailto:contact@bantuin.org" class="inline-flex h-11 items-center gap-2 rounded-full bg-brand-700 px-6 text-sm font-semibold text-white hover:bg-brand-800">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" fill="currentColor"/></svg>
+            contact@bantuin.org
+          </a>
+          <span class="text-ink-500 text-sm">atau +62 812-3456-7890</span>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer id="kontak" class="bg-ink-900 text-white">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <footer class="bg-ink-900 text-white py-12 sm:py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div class="flex items-center gap-2">
-              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-700">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path
-                    d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"
-                  />
-                </svg>
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-white">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.2-4.6-9.6-9C.1 7.2 3.2 3.8 7.1 4.1c1.7.1 3.2 1 3.9 2.2.7-1.2 2.2-2.1 3.9-2.2 3.9-.3 7 3.1 4.7 7.9C19.2 16.4 12 21 12 21z"/></svg>
               </span>
-              <span class="text-lg font-semibold">BantuIn</span>
+              <span class="font-semibold">BantuIn</span>
             </div>
-            <p class="mt-3 text-sm text-white/75">
-              Memberdayakan komunitas dan mengubah kehidupan melalui kepedulian dan kemurahan hati.
-            </p>
+            <p class="mt-4 text-sm text-white/60 leading-relaxed">Platform donasi digital terpercaya untuk Indonesia yang lebih baik.</p>
           </div>
-
           <div>
-            <h3 class="text-sm font-semibold text-white/90">Tautan Cepat</h3>
+            <h3 class="text-sm font-semibold text-white/90">Platform</h3>
             <ul class="mt-4 space-y-2 text-sm text-white/75">
-              <li><a class="hover:text-white" href="#tentang">Tentang Kami</a></li>
               <li><a class="hover:text-white" href="#kampanye">Kampanye</a></li>
+              <li><a class="hover:text-white" href="#tentang">Tentang Kami</a></li>
               <li><a class="hover:text-white" href="#dampak">Dampak Kami</a></li>
-              <li><a class="hover:text-white" href="#">Blog</a></li>
             </ul>
           </div>
-
           <div>
             <h3 class="text-sm font-semibold text-white/90">Mari Terlibat</h3>
             <ul class="mt-4 space-y-2 text-sm text-white/75">
               <li><a class="hover:text-white" href="#kampanye">Donasi</a></li>
-              <li><a class="hover:text-white" href="#tentang">Jadi Relawan</a></li>
-              <li><a class="hover:text-white" href="#kampanye">Mulai Kampanye</a></li>
-              <li><a class="hover:text-white" href="#">Bermitra dengan Kami</a></li>
+              <li><button class="hover:text-white" data-open-auth>Jadi Relawan</button></li>
+              <li><button class="hover:text-white" data-open-auth>Mulai Kampanye</button></li>
             </ul>
           </div>
-
           <div>
             <h3 class="text-sm font-semibold text-white/90">Kontak</h3>
             <ul class="mt-4 space-y-2 text-sm text-white/75">
               <li><a class="hover:text-white" href="mailto:contact@bantuin.org">contact@bantuin.org</a></li>
-              <li>+1 (555) 123-4567</li>
-              <li>123 Charity Street</li>
-              <li>New York, NY 10001</li>
+              <li>+62 812-3456-7890</li>
+              <li>Jakarta, Indonesia</li>
             </ul>
           </div>
         </div>
-
         <div class="mt-10 border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-xs text-white/60">© <span id="year"></span> BantuIn. All rights reserved.</p>
           <div class="flex items-center gap-4 text-xs text-white/60">
@@ -603,20 +396,12 @@
       </div>
     </footer>
 
-    <!-- Floating help button (bottom-right “?”) -->
-    <button
-      class="fixed bottom-5 right-5 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-ink-900 text-white shadow-soft hover:bg-ink-800 focus:outline-none focus:ring-2 focus:ring-ink-200"
-      type="button"
-      aria-label="Bantuan"
-      title="Bantuan"
-    >
-      ?
-    </button>
+    <!-- Floating help button -->
+    <button class="fixed bottom-5 right-5 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-ink-900 text-white shadow-soft hover:bg-ink-800" type="button" aria-label="Bantuan" title="Bantuan">?</button>
 
-    <!-- Auth Modal (Masuk / Daftar) -->
+    <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-      <div class="absolute inset-0 bg-black/55"></div>
-
+      <div class="absolute inset-0 bg-black/55" data-close-auth></div>
       <div class="relative mx-auto flex min-h-screen max-w-3xl items-center justify-center p-4">
         <div class="w-full max-w-md rounded-3xl bg-white shadow-soft">
           <div class="flex items-center justify-between px-6 pt-6">
@@ -624,70 +409,34 @@
               <h3 id="authTitle" class="text-base font-semibold">Selamat Datang di BantuIn</h3>
               <p class="mt-1 text-sm text-ink-600">Masuk atau daftar untuk mulai membantu sesama</p>
             </div>
-            <button
-              class="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-ink-50"
-              type="button"
-              data-close-auth
-              aria-label="Tutup"
-            >
+            <button class="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-ink-50" type="button" data-close-auth aria-label="Tutup">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M6 6l12 12M18 6L6 18"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </button>
           </div>
-
           <div class="px-6 pb-6">
             <div class="mt-5 rounded-full bg-ink-50 p-1">
               <div class="grid grid-cols-2 gap-1">
-                <button
-                  id="tabLogin"
-                  class="h-10 rounded-full bg-white text-sm font-semibold text-ink-900 shadow-sm"
-                  type="button"
-                >
-                  Masuk
-                </button>
-                <button
-                  id="tabRegister"
-                  class="h-10 rounded-full text-sm font-semibold text-ink-700 hover:bg-white/60"
-                  type="button"
-                >
-                  Daftar
-                </button>
+                <button id="tabLogin" class="h-10 rounded-full bg-white text-sm font-semibold text-ink-900 shadow-sm" type="button">Masuk</button>
+                <button id="tabRegister" class="h-10 rounded-full text-sm font-semibold text-ink-700 hover:bg-white/60" type="button">Daftar</button>
               </div>
             </div>
+
+            <div id="authError" class="hidden mt-3 rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700"></div>
+            <div id="authSuccess" class="hidden mt-3 rounded-xl bg-green-50 px-4 py-2 text-sm text-green-700"></div>
 
             <!-- Login form -->
             <form id="loginForm" class="mt-5 space-y-3">
               <div>
                 <label class="text-xs font-medium text-ink-700">Email</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="nama@email.com"
-                  type="email"
-                  required
-                />
+                <input id="loginEmail" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="nama@email.com" type="email" required/>
               </div>
               <div>
                 <label class="text-xs font-medium text-ink-700">Password</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="Masukkan password"
-                  type="password"
-                  required
-                />
+                <input id="loginPassword" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="Masukkan password" type="password" required/>
               </div>
-              <p class="text-xs text-ink-500">
-                💡 Tips: Gunakan email dengan kata “admin” untuk akses admin (demo UI).
-              </p>
-              <button
-                class="mt-2 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800"
-                type="submit"
-              >
+              <button class="mt-2 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800" type="submit">
                 Masuk
               </button>
             </form>
@@ -696,46 +445,28 @@
             <form id="registerForm" class="mt-5 space-y-3 hidden">
               <div>
                 <label class="text-xs font-medium text-ink-700">Nama Lengkap</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="Nama Anda"
-                  type="text"
-                  required
-                />
+                <input id="regName" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="Nama Anda" type="text" required/>
               </div>
               <div>
                 <label class="text-xs font-medium text-ink-700">Email</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="nama@email.com"
-                  type="email"
-                  required
-                />
+                <input id="regEmail" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="nama@email.com" type="email" required/>
+              </div>
+              <div>
+                <label class="text-xs font-medium text-ink-700">Peran</label>
+                <select id="regRole" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200">
+                  <option value="donatur">Donatur</option>
+                  <option value="fundraiser">Fundraiser</option>
+                </select>
               </div>
               <div>
                 <label class="text-xs font-medium text-ink-700">Password</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="Minimal 6 karakter"
-                  type="password"
-                  minlength="6"
-                  required
-                />
+                <input id="regPassword" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="Minimal 6 karakter" type="password" minlength="6" required/>
               </div>
               <div>
                 <label class="text-xs font-medium text-ink-700">Konfirmasi Password</label>
-                <input
-                  class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200"
-                  placeholder="Ulangi password"
-                  type="password"
-                  minlength="6"
-                  required
-                />
+                <input id="regConfirm" class="mt-1 h-11 w-full rounded-2xl bg-ink-50 px-4 text-sm outline-none ring-1 ring-transparent focus:bg-white focus:ring-ink-200" placeholder="Ulangi password" type="password" minlength="6" required/>
               </div>
-              <button
-                class="mt-2 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800"
-                type="submit"
-              >
+              <button class="mt-2 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-700 text-sm font-semibold text-white hover:bg-brand-800" type="submit">
                 Daftar
               </button>
             </form>
@@ -744,6 +475,259 @@
       </div>
     </div>
 
-    <script src="./app.js"></script>
+    <script>
+      // ============================================================
+      // AUTH SYSTEM — localStorage-based multi-account support
+      // ============================================================
+
+      // Default admin account (always seeded)
+      function seedDefaultAccounts() {
+        const users = getUsers();
+        const hasAdmin = users.some(u => u.email === 'admin@bantuin.org');
+        if (!hasAdmin) {
+          users.push({ name: 'Admin BantuIn', email: 'admin@bantuin.org', password: 'admin123', role: 'admin' });
+          saveUsers(users);
+        }
+      }
+
+      function getUsers() {
+        return JSON.parse(localStorage.getItem('bantuin_users') || '[]');
+      }
+      function saveUsers(users) {
+        localStorage.setItem('bantuin_users', JSON.stringify(users));
+      }
+      function getCurrentUser() {
+        return JSON.parse(localStorage.getItem('bantuin_current_user') || 'null');
+      }
+      function setCurrentUser(user) {
+        localStorage.setItem('bantuin_current_user', JSON.stringify(user));
+      }
+      function clearCurrentUser() {
+        localStorage.removeItem('bantuin_current_user');
+      }
+
+      function login(email, password) {
+        const users = getUsers();
+        const user = users.find(u => u.email === email && u.password === password);
+        if (!user) return { ok: false, msg: 'Email atau password salah.' };
+        setCurrentUser({ name: user.name, email: user.email, role: user.role });
+        return { ok: true, user };
+      }
+
+      function register(name, email, password, role) {
+        const users = getUsers();
+        if (users.find(u => u.email === email)) {
+          return { ok: false, msg: 'Email sudah terdaftar. Silakan masuk.' };
+        }
+        const newUser = { name, email, password, role };
+        users.push(newUser);
+        saveUsers(users);
+        setCurrentUser({ name, email, role });
+        return { ok: true, user: newUser };
+      }
+
+      function logout() {
+        clearCurrentUser();
+        window.location.href = './index.html';
+      }
+
+      function getDashboardUrl(role) {
+        if (role === 'admin') return './admin.html';
+        if (role === 'fundraiser') return './fundraiser.html';
+        return './donatur.html';
+      }
+
+      // ── Update Navbar based on login state ──
+      function updateNavbar() {
+        const user = getCurrentUser();
+        const btnLogin = document.getElementById('btnLogin');
+        const userMenuWrapper = document.getElementById('userMenuWrapper');
+
+        if (user) {
+          // Logged in: hide Masuk, show user menu
+          if (btnLogin) btnLogin.style.display = 'none';
+          if (userMenuWrapper) {
+            userMenuWrapper.classList.remove('hidden');
+            userMenuWrapper.style.display = '';
+          }
+          const initial = document.getElementById('userInitial');
+          if (initial) initial.textContent = user.name.charAt(0).toUpperCase();
+          const menuName = document.getElementById('menuUserName');
+          if (menuName) menuName.textContent = user.name;
+          const menuEmail = document.getElementById('menuUserEmail');
+          if (menuEmail) menuEmail.textContent = user.email;
+          const menuRole = document.getElementById('menuUserRole');
+          if (menuRole) menuRole.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+          const dashLink = document.getElementById('menuDashboardLink');
+          if (dashLink) dashLink.href = getDashboardUrl(user.role);
+        } else {
+          // Not logged in: show Masuk, hide user menu
+          if (btnLogin) btnLogin.style.display = '';
+          if (userMenuWrapper) {
+            userMenuWrapper.classList.add('hidden');
+            userMenuWrapper.style.display = 'none';
+          }
+        }
+      }
+
+      // ── Modal Logic ──
+      function openAuthModal() {
+        document.getElementById('authModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        clearAuthMessages();
+      }
+      function closeAuthModal() {
+        document.getElementById('authModal').classList.add('hidden');
+        document.body.style.overflow = '';
+        clearAuthMessages();
+      }
+      function clearAuthMessages() {
+        const err = document.getElementById('authError');
+        const suc = document.getElementById('authSuccess');
+        if (err) { err.classList.add('hidden'); err.textContent = ''; }
+        if (suc) { suc.classList.add('hidden'); suc.textContent = ''; }
+      }
+      function showAuthError(msg) {
+        const el = document.getElementById('authError');
+        if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+      }
+      function showAuthSuccess(msg) {
+        const el = document.getElementById('authSuccess');
+        if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+      }
+
+      // ── Tab switching ──
+      function setTab(tab) {
+        clearAuthMessages();
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const tabLogin = document.getElementById('tabLogin');
+        const tabRegister = document.getElementById('tabRegister');
+        if (tab === 'login') {
+          loginForm.classList.remove('hidden');
+          registerForm.classList.add('hidden');
+          tabLogin.classList.add('bg-white', 'text-ink-900', 'shadow-sm');
+          tabLogin.classList.remove('text-ink-700');
+          tabRegister.classList.remove('bg-white', 'text-ink-900', 'shadow-sm');
+          tabRegister.classList.add('text-ink-700');
+        } else {
+          loginForm.classList.add('hidden');
+          registerForm.classList.remove('hidden');
+          tabRegister.classList.add('bg-white', 'text-ink-900', 'shadow-sm');
+          tabRegister.classList.remove('text-ink-700');
+          tabLogin.classList.remove('bg-white', 'text-ink-900', 'shadow-sm');
+          tabLogin.classList.add('text-ink-700');
+        }
+      }
+
+      // ── Init ──
+      document.addEventListener('DOMContentLoaded', function () {
+        seedDefaultAccounts();
+        updateNavbar();
+
+        // Footer year
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+        // Open auth modal triggers (all elements with data-open-auth)
+        document.querySelectorAll('[data-open-auth]').forEach(el => {
+          el.addEventListener('click', function (e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            if (user) {
+              window.location.href = getDashboardUrl(user.role);
+            } else {
+              openAuthModal();
+            }
+          });
+        });
+
+        // Close auth modal triggers
+        document.querySelectorAll('[data-close-auth]').forEach(el => {
+          el.addEventListener('click', closeAuthModal);
+        });
+
+        // Tab buttons
+        document.getElementById('tabLogin').addEventListener('click', () => setTab('login'));
+        document.getElementById('tabRegister').addEventListener('click', () => setTab('register'));
+
+        // Login form submit
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+          e.preventDefault();
+          clearAuthMessages();
+          const email = document.getElementById('loginEmail').value.trim();
+          const password = document.getElementById('loginPassword').value;
+          const result = login(email, password);
+          if (!result.ok) {
+            showAuthError(result.msg);
+            return;
+          }
+          showAuthSuccess('Berhasil masuk! Mengalihkan ke dashboard...');
+          setTimeout(() => {
+            closeAuthModal();
+            updateNavbar();
+            window.location.href = getDashboardUrl(result.user.role);
+          }, 800);
+        });
+
+        // Register form submit
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+          e.preventDefault();
+          clearAuthMessages();
+          const name = document.getElementById('regName').value.trim();
+          const email = document.getElementById('regEmail').value.trim();
+          const role = document.getElementById('regRole').value;
+          const password = document.getElementById('regPassword').value;
+          const confirm = document.getElementById('regConfirm').value;
+          if (password !== confirm) {
+            showAuthError('Password dan konfirmasi tidak cocok.');
+            return;
+          }
+          const result = register(name, email, password, role);
+          if (!result.ok) {
+            showAuthError(result.msg);
+            return;
+          }
+          showAuthSuccess('Akun berhasil dibuat! Mengalihkan ke dashboard...');
+          setTimeout(() => {
+            closeAuthModal();
+            updateNavbar();
+            window.location.href = getDashboardUrl(result.user.role);
+          }, 800);
+        });
+
+        // User menu toggle
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+        if (userMenuButton && userMenu) {
+          userMenuButton.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isHidden = userMenu.classList.contains('hidden');
+            userMenu.classList.toggle('hidden', !isHidden);
+            userMenuButton.setAttribute('aria-expanded', String(isHidden));
+          });
+          document.addEventListener('click', function () {
+            userMenu.classList.add('hidden');
+            userMenuButton.setAttribute('aria-expanded', 'false');
+          });
+        }
+
+        // Mobile menu toggle
+        const btnMobileMenu = document.getElementById('btnMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (btnMobileMenu && mobileMenu) {
+          btnMobileMenu.addEventListener('click', function () {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden', !isHidden);
+            btnMobileMenu.setAttribute('aria-expanded', String(isHidden));
+          });
+        }
+
+        // Close modal on Escape
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') closeAuthModal();
+        });
+      });
+    </script>
   </body>
 </html>
